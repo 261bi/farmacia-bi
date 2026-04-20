@@ -1,0 +1,20 @@
+name: farmacia-bi-dbt
+
+services:
+  dbt:
+    build: .
+    container_name: farmacia-dw-dbt
+    volumes:
+      - .:/usr/app
+      - ./.dbt:/root/.dbt
+    working_dir: /usr/app
+    command: sleep infinity
+    networks:
+      - farmacia-bi-net
+    tty: true
+    stdin_open: true
+
+networks:
+  farmacia-bi-net:
+    external: true
+    name: farmacia-bi-net

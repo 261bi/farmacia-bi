@@ -1,0 +1,12 @@
+farmacia_bi:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: farmacia-dw-pg
+      user: postgres
+      password: postgres
+      port: 5432
+      dbname: farmacia_dw
+      schema: marts
+      threads: 1

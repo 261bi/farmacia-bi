@@ -1,0 +1,26 @@
+name: farmacia-bi-dw
+
+services:
+  postgres-farmacia-dw:
+    image: postgres:16
+    container_name: farmacia-dw-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: farmacia_dw
+      TZ: America/Lima
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_farmacia_dw_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - farmacia-bi-net
+
+volumes:
+  postgres_farmacia_dw_data:
+
+networks:
+  farmacia-bi-net:
+    name: farmacia-bi-net
