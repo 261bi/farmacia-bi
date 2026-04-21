@@ -58,11 +58,23 @@ MySQL (farmadb) -> Airbyte -> PostgreSQL (farmacia_dw.raw)
 - `source`: origen de datos que Airbyte lee
 - `destination`: destino donde Airbyte escribe los datos
 - `connection`: vinculo entre source y destination con su configuracion de sincronizacion
-- `sync`: ejecucion de replica
-- `full refresh`: copia completa de datos desde el origen
+- `sync`: ejecucion de replica entre el origen y el destino
+- `cursor`: columna que permite detectar registros nuevos o modificados para sincronizaciones incrementales
+- `full refresh`: recarga completa de los datos desde el origen
+- `incremental`: carga solo registros nuevos o modificados desde el origen, normalmente usando un `cursor`
+- `CDC`: captura cambios en la fuente, como `insert`, `update` y `delete`
 - `raw`: capa inicial donde aterrizan los datos antes de las transformaciones analiticas
 
-### 6.1 Donde encaja CDC en esta sesion
+En esta practica, lo que corresponde aplicar es:
+
+- replica desde MySQL hacia PostgreSQL
+- aterrizaje en `raw`
+- configuracion de `cursor`
+- sincronizacion incremental cuando el conector lo permita de forma estable
+
+En cambio, `CDC` se deja ubicado aqui como concepto de ingesta moderna, pero no se implementa en esta primera practica como captura basada en logs del motor.
+
+### 6.1 Donde encaja CDC (Change Data Capture) en esta sesion
 
 En una arquitectura moderna, `CDC` pertenece a la fase de ingesta.
 
@@ -70,13 +82,15 @@ En esta sesion:
 
 - Airbyte trabaja sobre la captura y replica desde el OLTP
 - por eso, conceptualmente, `CDC` ocurre aqui
-- en esta primera version del laboratorio se usa `Full refresh | Overwrite`
-- eso significa que todavia no se implementa CDC real basado en logs
+- como el `farmadb` actual ya incluye `fecha_creacion` y `fecha_modificacion`, ahora si existe una base minima para trabajar sincronizacion incremental con `cursor`
+- eso no significa todavia CDC real basado en logs
+- pero si permite una replica incremental mas cercana a cambios recientes en las tablas
 
 Importante:
 
 - `farmadb` si es una fuente OLTP valida para una estrategia de CDC
 - pero CDC en MySQL requiere configuracion adicional del motor y del conector
+- en esta practica, el uso de `cursor` se apoya en columnas temporales del modelo y no en binlog de MySQL
 
 ## 7. Mapa actual del OLTP `farmadb`
 
@@ -103,6 +117,11 @@ Campos clave del modelo actual:
 - `productos`: `id`, `codigo`, `nombre`, `concentracion`, `presentacion`, `fracciones`, `precio_compra`, `precio_venta`, `categoria_id`
 - `pedidos`: `id`, `fecha_creacion`, `fecha_confirmacion`, `fecha_envio`, `fecha_entrega`, `fecha_pago`, `estado`, `cliente_id`, `direccion`, `vendedor_id`
 - `pedido_detalles`: `pedido_id`, `producto_id`, `cantidad`, `precio_compra_unitario`, `precio_venta_unitario`, `total_descuento_unitario`, `igv_unitario`
+
+Campos utiles para incremental:
+
+- `fecha_modificacion`: cursor recomendado cuando la tabla lo tenga
+- `fecha_creacion`: cursor alternativo para una primera aproximacion
 
 ## 8. Desarrollo de la practica
 
@@ -181,8 +200,18 @@ Trabaja con estas tablas:
 
 Configuracion recomendada:
 
-- modo por tabla: `Full refresh | Overwrite`
+- modo por tabla: `Incremental | Append + Deduped`
+- cursor recomendado: `fecha_modificacion`
+- cursor alternativo: `fecha_creacion`
+- primary key:
+  - `id` para `clientes`, `vendedores`, `familias`, `categorias`, `productos`, `pedidos`
+  - `pedido_id, producto_id` para `pedido_detalles` si el conector permite clave compuesta; si no, documenta la limitacion y usa validacion posterior
 - frecuencia: `Manual` o `Every 24 hours`
+
+Observacion didactica:
+
+- si alguna tabla o configuracion puntual del conector no se deja resolver bien en incremental, puedes usar `Full refresh | Overwrite` como respaldo
+- pero con el `farmadb` actual, la explicacion base ya debe presentar el uso de `cursor`
 
 ### 8.8 Ejecuta la primera sincronizacion
 

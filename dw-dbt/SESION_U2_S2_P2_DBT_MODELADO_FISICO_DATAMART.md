@@ -49,7 +49,7 @@ Equivalencia conceptual:
 - `staging` = `Silver`
 - `marts` = `Gold`
 
-### 5.1 Donde encaja SCD en esta sesion
+### 5.1 Donde encaja SCD (Slowly Changing Dimensions) en esta sesion
 
 En una arquitectura moderna, `SCD` pertenece al modelado dimensional dentro del DW.
 

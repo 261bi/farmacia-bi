@@ -574,7 +574,7 @@ docker compose ps
 Ingresa al motor:
 
 ```powershell
-docker exec -it farmacia-oltp-mysql mysql -u root -p root farmadb
+docker exec -it farmacia-oltp-mysql mysql -uroot -proot farmadb
 ```
 
 Valida las tablas transaccionales:

@@ -142,7 +142,9 @@ Cuando configures el destination PostgreSQL en Airbyte, apunta a:
 Para esta práctica, usa:
 
 - tablas: `categorias`, `clientes`, `familias`, `pedido_detalles`, `pedidos`, `productos`, `vendedores`
-- modo por tabla: `Full refresh | Overwrite`
+- modo por tabla: `Incremental | Append + Deduped`
+- cursor recomendado: `fecha_modificacion`
+- cursor alternativo: `fecha_creacion`
 - frecuencia: `Manual` o `Every 24 hours`
 
 ## Limpieza previa recomendada del laboratorio (opcional)
