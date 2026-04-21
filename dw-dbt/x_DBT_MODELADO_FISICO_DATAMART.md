@@ -77,6 +77,12 @@ En este proyecto debes distinguir claramente tres capas:
   - contiene dimensiones y hechos
   - implementa el modelo estrella final para análisis y reportes
 
+Equivalencia conceptual frecuente:
+
+- `raw` = `Bronze`
+- `staging` = `Silver`
+- `marts` = `Gold`
+
 Regla práctica:
 
 - `staging` se hace primero por tabla transaccional o tabla fuente relevante

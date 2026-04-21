@@ -26,3 +26,15 @@ Este documento deja congelada la segunda sesion macro de la Unidad 2 para el sig
 ## Nota conceptual
 
 Esta sesion representa el paso desde un enfoque manual hacia un pipeline BI mas mantenible, trazable y escalable.
+
+En muchos materiales externos esta arquitectura se explica como capas:
+
+- `Bronze`: datos crudos
+- `Silver`: datos limpiados y estandarizados
+- `Gold`: datos listos para analisis de negocio
+
+En este curso, la equivalencia practica sera:
+
+- `raw` = `Bronze`
+- `staging` = `Silver`
+- `marts` = `Gold`
