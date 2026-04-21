@@ -21,6 +21,10 @@ MySQL (oltp-mysql) -> Airbyte -> PostgreSQL (dw-pg.raw)
 
 La instalación local de Airbyte se trabaja por separado con `abctl`.
 
+## Guia principal de la sesion
+
+- [SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
+
 
 ## Levantar el entorno
 

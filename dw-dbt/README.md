@@ -2,6 +2,11 @@
 
 Este directorio contiene el entorno base para trabajar con `dbt` sobre PostgreSQL usando Docker.
 
+## Guias principales de la sesion
+
+- [SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
+- [SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)
+
 ## Objetivo
 
 Levantar un contenedor con `dbt-core` y `dbt-postgres` para construir el diseño físico del `Data Warehouse` y los `Data Marts` a partir de la capa `raw` ya cargada por Airbyte.
