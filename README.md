@@ -47,9 +47,9 @@ La Unidad 2 queda organizada en dos sesiones principales:
 
 Documentos de apoyo creados en la raiz:
 
-- [UNIDAD_2_SESION_1.md](/c:/261bi/farmacia-bi/UNIDAD_2_SESION_1.md)
-- [UNIDAD_2_SESION_2.md](/c:/261bi/farmacia-bi/UNIDAD_2_SESION_2.md)
-- [UNIDAD_2_ESTRUCTURA_GUIAS.md](/c:/261bi/farmacia-bi/UNIDAD_2_ESTRUCTURA_GUIAS.md)
+- [UNIDAD_2_SESION_1.md](UNIDAD_2_SESION_1.md)
+- [UNIDAD_2_SESION_2.md](UNIDAD_2_SESION_2.md)
+- [UNIDAD_2_ESTRUCTURA_GUIAS.md](UNIDAD_2_ESTRUCTURA_GUIAS.md)
 
 ## Mapa de guias por carpeta
 

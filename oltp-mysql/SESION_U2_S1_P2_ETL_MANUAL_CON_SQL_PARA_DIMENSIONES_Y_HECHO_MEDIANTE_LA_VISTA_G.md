@@ -19,7 +19,7 @@ Esta sesión es clave porque aquí el estudiante ve de manera explícita cómo s
 
 Esta guía continúa directamente desde:
 
-- [SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md](/c:/261bi/farmacia-bi/oltp-mysql/SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md)
+- [SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md](SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md)
 
 Antes de empezar esta práctica, deben existir ya estas tablas en `farmadb`:
 
@@ -75,6 +75,19 @@ Ingresa al motor:
 ```powershell
 docker exec -it farmacia-oltp-mysql mysql -uroot -proot farmadb
 ```
+
+## 6.1 Scripts de apoyo de esta sesión
+
+En esta sesión conviene distinguir dos archivos SQL:
+
+- [2_G_pasos.sql](2_G_pasos.sql): guion pedagógico para entender la construcción progresiva de la vista `G`.
+- [3_poblar.sql](3_poblar.sql): script operativo final para poblar dimensiones, crear `vw_g_ventas` y cargar `fact_ventas`.
+
+Orden recomendado de ejecución dentro de `oltp-mysql`:
+
+1. [1_dm.sql](1_dm.sql)
+2. [2_G_pasos.sql](2_G_pasos.sql)
+3. [3_poblar.sql](3_poblar.sql)
 
 ## 7. Revisión previa de tablas fuente
 

@@ -34,3 +34,17 @@ docker compose ps
 El script base se encuentra en:
 
 - `mysql/init/farmadb.sql`
+
+## Scripts Manuales Del DataMart
+
+Orden recomendado de trabajo:
+
+1. `1_dm.sql`
+2. `2_G_pasos.sql`
+3. `3_poblar.sql`
+
+Propósito de cada script:
+
+- `1_dm.sql`: crea físicamente las dimensiones y la tabla de hechos del DataMart manual.
+- `2_G_pasos.sql`: explica de forma pedagógica cómo se construye la lógica de la vista `G`.
+- `3_poblar.sql`: ejecuta la carga final de dimensiones, `vw_g_ventas` y `fact_ventas`.
