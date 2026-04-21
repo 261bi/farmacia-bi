@@ -49,7 +49,6 @@ Documentos de apoyo creados en la raiz:
 
 - [UNIDAD_2_SESION_1.md](UNIDAD_2_SESION_1.md)
 - [UNIDAD_2_SESION_2.md](UNIDAD_2_SESION_2.md)
-- [UNIDAD_2_ESTRUCTURA_GUIAS.md](UNIDAD_2_ESTRUCTURA_GUIAS.md)
 
 ## Mapa de guias por carpeta
 

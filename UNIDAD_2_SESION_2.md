@@ -13,9 +13,8 @@ Este documento deja congelada la segunda sesion macro de la Unidad 2 para el sig
 
 ## Practicas que la componen
 
-- `SESION_U2_S2_P1_INGESTA_BATCH_CON_AIRBYTE_DE_MYSQL_A_POSTGRESQL.md`
-- `SESION_U2_S2_P2_IMPLEMENTACION_DE_STAGING_CON_DBT_EN_POSTGRESQL.md`
-- `SESION_U2_S2_P3_IMPLEMENTACION_DEL_DATAMART_CON_DBT_EN_POSTGRESQL.md`
+- [x_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](ingesta-airbyte/x_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
+- [x_DBT_MODELADO_FISICO_DATAMART.md](dw-dbt/x_DBT_MODELADO_FISICO_DATAMART.md)
 
 ## Logica didactica
 
