@@ -1,11 +1,11 @@
 # farmacia-bi
 
-Laboratorio BI para construir un flujo completo desde una base transaccional hasta un DW/DataMart explotable en Power BI.
+Laboratorio BI para construir un pipeline BI completo desde una base transaccional hasta un DW/DataMart explotable en Power BI.
 
 ## Flujo general
 
 ```text
-MySQL OLTP -> Airbyte -> PostgreSQL DW -> dbt -> Power BI
+MySQL OLTP -> Airbyte -> PostgreSQL RAW -> dbt  -> PostgreSQL DW -> Power BI
 ```
 
 ## Arquitectura global
@@ -13,23 +13,11 @@ MySQL OLTP -> Airbyte -> PostgreSQL DW -> dbt -> Power BI
 ```mermaid
 flowchart LR
     A[MySQL OLTP<br/>farmadb] --> B[Airbyte<br/>Ingesta]
-    B --> C[PostgreSQL RAW<br/>farmacia_dw.raw]
+    B --> C[PostgreSQL RAW<br/>farmacia_dw<br/>.raw]
     C --> D[dbt<br/>Transformacion]
-    D --> E[PostgreSQL DW<br/>farmacia_dw<br/>staging y marts]
+    D --> E[PostgreSQL DW<br/>farmacia_dw<br/>.staging y .marts]
     E --> F[Power BI<br/>Consumo analitico]
 ```
-
-## Rol de este README
-
-Este `README.md` de la raiz funciona como:
-
-- portal principal del repositorio
-- mapa de arquitectura
-- mapa de navegacion
-- punto de partida para estudiantes y docentes
-
-El detalle operativo de cada modulo vive en su propio `README`.
-La explicacion didactica paso a paso vive en los archivos `SESION_...md`.
 
 ## Estructura del proyecto
 
