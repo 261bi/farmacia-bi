@@ -2,11 +2,34 @@
 
 Laboratorio BI para construir un flujo completo desde una base transaccional hasta un DW/DataMart explotable en Power BI.
 
-Flujo general del proyecto:
+## Flujo general
 
 ```text
 MySQL OLTP -> Airbyte -> PostgreSQL DW -> dbt -> Power BI
 ```
+
+## Arquitectura global
+
+```mermaid
+flowchart LR
+    A[MySQL OLTP<br/>farmadb] --> B[Airbyte<br/>Ingesta]
+    B --> C[PostgreSQL DW<br/>farmacia_dw.raw]
+    C --> D[dbt<br/>staging]
+    D --> E[dbt<br/>marts]
+    E --> F[Power BI<br/>Consumo analitico]
+```
+
+## Rol de este README
+
+Este `README.md` de la raiz funciona como:
+
+- portal principal del repositorio
+- mapa de arquitectura
+- mapa de navegacion
+- punto de partida para estudiantes y docentes
+
+El detalle operativo de cada modulo vive en su propio `README`.
+La explicacion didactica paso a paso vive en los archivos `SESION_...md`.
 
 ## Estructura del proyecto
 
@@ -21,31 +44,49 @@ farmacia-bi/
 
 ## Que contiene cada carpeta
 
-- `oltp-mysql/`: origen transaccional MySQL con la base `farmadb` y la fase manual del DW.
-- `dw-pg/`: PostgreSQL analitico con la base `farmacia_dw`.
-- `ingesta-airbyte/`: documentacion y guias de ingesta batch con Airbyte.
-- `dw-dbt/`: proyecto dbt para construir `staging` y `marts`.
-- `powerbi/`: espacio para la capa semantica, explotacion analitica y dashboard final.
+- `oltp-mysql/`: origen transaccional MySQL con la base `farmadb` y la fase manual del DW
+- `dw-pg/`: PostgreSQL analitico con la base `farmacia_dw`
+- `ingesta-airbyte/`: modulo de ingesta con Airbyte
+- `dw-dbt/`: proyecto dbt para construir `staging` y `marts`
+- `powerbi/`: capa final de consumo y visualizacion
 
 ## Arquitectura logica
 
-- `farmadb` en MySQL representa el OLTP.
-- Airbyte replica desde MySQL hacia PostgreSQL.
+En este proyecto:
+
+- `farmadb` en MySQL representa el OLTP
+- Airbyte replica hacia PostgreSQL
 - PostgreSQL se organiza en tres schemas:
-  - `raw`: aterrizaje de Airbyte.
-  - `staging`: limpieza y homologacion con dbt.
-  - `marts`: dimensiones y hechos del DataMart.
+  - `raw`
+  - `staging`
+  - `marts`
+
+Equivalencia conceptual:
+
+- `raw` = `Bronze`
+- `staging` = `Silver`
+- `marts` = `Gold`
+
+## Orden recomendado de trabajo
+
+Sigue este orden:
+
+1. `oltp-mysql/`
+2. `dw-pg/`
+3. `ingesta-airbyte/`
+4. `dw-dbt/`
+5. `powerbi/`
+
+Para los comandos operativos concretos, revisa el `README.md` de cada carpeta.
 
 ## Unidad 2 congelada
 
 La Unidad 2 queda organizada en dos sesiones principales:
 
 - `Sesion 6 - Implementacion manual del DW con SQL`
-  - ETL manual, transformacion, carga y validacion analitica.
 - `Sesion 7 - Implementacion del pipeline BI con herramientas`
-  - ingesta, transformacion, carga y optimizacion.
 
-Documentos de apoyo creados en la raiz:
+Documentos de apoyo en la raiz:
 
 - [UNIDAD_2_SESION_1.md](UNIDAD_2_SESION_1.md)
 - [UNIDAD_2_SESION_2.md](UNIDAD_2_SESION_2.md)
@@ -58,7 +99,6 @@ farmacia-bi/
 │   ├── SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md
 │   ├── SESION_U2_S1_P2_ETL_MANUAL_CON_SQL_PARA_DIMENSIONES_Y_HECHO_MEDIANTE_LA_VISTA_G.md
 │   └── SESION_U2_S1_P3_VALIDACION_ANALITICA_DEL_DATAMART_MANUAL.md
-├── dw-pg/
 ├── ingesta-airbyte/
 │   └── SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md
 ├── dw-dbt/
@@ -67,179 +107,16 @@ farmacia-bi/
 └── powerbi/
 ```
 
-## Orden recomendado de trabajo tecnico
+## READMEs de modulo
 
-### 1. Levantar el OLTP MySQL
+Cada `README` de carpeta sigue este criterio:
 
-```powershell
-cd C:\261bi\farmacia-bi\oltp-mysql
-docker compose up -d
-docker compose ps
-```
+- onboarding del modulo
+- operacion minima
+- integracion con el resto del proyecto
+- validacion minima
+- instalacion, solo cuando el modulo lo requiere
 
-Verificacion opcional:
+## Nota final
 
-```powershell
-docker exec -it farmacia-oltp-mysql mysql -uroot -proot farmadb
-```
-
-### 2. Levantar el PostgreSQL del DW
-
-```powershell
-cd C:\261bi\farmacia-bi\dw-pg
-docker compose up -d
-docker compose ps
-```
-
-Verificacion opcional:
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Dentro de PostgreSQL valida los schemas:
-
-```sql
-\dn
-```
-
-Debes ver:
-
-- `raw`
-- `staging`
-- `marts`
-
-### 3. Instalar o verificar Airbyte local
-
-En este laboratorio, Airbyte se trabaja por separado con `abctl`.
-
-Si ya lo tienes instalado y operativo, puedes verificar acceso en:
-
-```text
-http://localhost:8010
-```
-
-Si todavia no lo tienes instalado, en PowerShell como administrador ejecuta:
-
-```powershell
-abctl version
-abctl local install --port 8010
-abctl local credentials
-```
-
-Resultado esperado:
-
-- Airbyte queda disponible en `http://localhost:8010`
-- puedes recuperar las credenciales con `abctl local credentials`
-
-### 4. Configurar Airbyte para aterrizar en `raw`
-
-En este laboratorio Airbyte se usa como instalacion separada y manual.
-
-Abre en el navegador:
-
-```text
-http://localhost:8010
-```
-
-#### Source MySQL
-
-- Host: `host.docker.internal`
-- Port: `13306`
-- Database: `farmadb`
-- Username: `root`
-- Password: `root`
-
-#### Destination PostgreSQL
-
-- Host: `host.docker.internal`
-- Port: `15432`
-- Database: `farmacia_dw`
-- Schema: `raw`
-- Username: `postgres`
-- Password: `postgres`
-
-#### Configuracion de la conexion
-
-Para este laboratorio, trabaja con:
-
-- `Replicate Source`
-- modo por tabla: `Incremental | Append + Deduped`
-- cursor recomendado: `fecha_modificacion`
-- cursor alternativo: `fecha_creacion`
-
-Luego ejecuta:
-
-- `Sync now`
-
-### 5. Validar que Airbyte cargo datos en `raw`
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Dentro de PostgreSQL:
-
-```sql
-\dt raw.*
-SELECT * FROM raw.categorias LIMIT 10;
-SELECT * FROM raw.productos LIMIT 10;
-SELECT * FROM raw.pedidos LIMIT 10;
-```
-
-### 6. Levantar el entorno dbt
-
-```powershell
-cd C:\261bi\farmacia-bi\dw-dbt
-docker compose up -d --build
-docker compose ps
-```
-
-Ingresar al contenedor:
-
-```powershell
-docker exec -it farmacia-dw-dbt bash
-```
-
-### 7. Ejecutar dbt
-
-Dentro del contenedor:
-
-```bash
-cd /usr/app/farmacia_bi
-dbt debug
-dbt run --select staging
-dbt run --select +marts
-dbt test --select marts
-```
-
-### 8. Validar el DataMart final
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Dentro de PostgreSQL:
-
-```sql
-\dv staging.*
-\dt marts.*
-SELECT * FROM marts.dim_cliente LIMIT 10;
-SELECT * FROM marts.dim_vendedor LIMIT 10;
-SELECT * FROM marts.dim_producto LIMIT 10;
-SELECT * FROM marts.dim_fecha LIMIT 10;
-SELECT * FROM marts.dim_estado_pedido LIMIT 10;
-SELECT * FROM marts.fact_ventas LIMIT 20;
-```
-
-## Nota importante
-
-Trabaja ya con la estructura nueva del proyecto:
-
-- `oltp-mysql/`
-- `dw-pg/`
-- `ingesta-airbyte/`
-- `dw-dbt/`
-- `powerbi/`
-
-Si todavia ves carpetas antiguas de etapas previas, tomalo solo como historico y no las uses para el laboratorio actual.
+Si encuentras material historico de etapas previas, tomalo solo como referencia y no como ruta principal del laboratorio actual.

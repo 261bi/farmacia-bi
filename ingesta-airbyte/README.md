@@ -1,199 +1,49 @@
 # Ingesta Airbyte
 
-Esta carpeta queda reservada para la configuración y documentación de la ingesta con Airbyte.
+## Proposito
+
+Esta carpeta documenta el uso de Airbyte como modulo de ingesta para mover datos desde una fuente operativa hacia una base analitica.
+
+La logica es reutilizable en otros proyectos donde se necesite:
+
+- conectar una fuente transaccional
+- replicar datos hacia una capa de aterrizaje
+- dejar lista la entrada para una fase posterior de transformacion
 
 ## Rol en la arquitectura
 
+De forma general, Airbyte cumple este rol:
+
 ```text
-MySQL (oltp-mysql) -> Airbyte -> PostgreSQL (dw-pg.raw)
+Fuente operativa -> Airbyte -> destino analitico
 ```
 
-## Destino recomendado en Airbyte
+En este repositorio, se aplica asi:
 
-- Host: `host.docker.internal`
-- Port: `15432`
-- Database: `farmacia_dw`
-- Schema: `raw`
-- User: `postgres`
-- Password: `postgres`
-
-## Nota
-
-La instalación local de Airbyte se trabaja por separado con `abctl`.
-
-## Guia principal de la sesion
-
-- [SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
-
-
-## Levantar el entorno
-
-### Levantar MySQL OLTP
-
-```powershell
-cd C:\261bi\farmacia-bi\oltp-mysql
-docker compose up -d
+```text
+MySQL (farmadb) -> Airbyte -> PostgreSQL (farmacia_dw.raw)
 ```
 
-### Levantar PostgreSQL DW
+## Prerequisitos
 
-```powershell
-cd C:\261bi\farmacia-bi\dw-pg
-docker compose up -d
-```
+Antes de usar este modulo deben estar operativos:
 
-## Verificar contenedores
+- `oltp-mysql/`
+- `dw-pg/`
+- Docker Desktop
+- Airbyte local con `abctl`
 
-### Verificar MySQL OLTP
+## Instalacion de Airbyte en Windows
 
-```powershell
-cd C:\261bi\farmacia-bi\oltp-mysql
-docker compose ps
-```
+Trabaja Airbyte local con `abctl`.
 
-### Verificar PostgreSQL DW
-
-```powershell
-cd C:\261bi\farmacia-bi\dw-pg
-docker compose ps
-```
-
-## Accesos esperados
-
-- MySQL OLTP: `localhost:13306`
-- PostgreSQL DW: `localhost:15432`
-
-## Contenedores
-
-- MySQL: `farmacia-oltp-mysql`
-- PostgreSQL: `farmacia-dw-pg`
-
-## Credenciales
-
-### MySQL
-
-- Host: `localhost`
-- Port: `13306`
-- Database: `farmadb`
-- User: `root`
-- Password: `root`
-
-### PostgreSQL
-
-- Host: `localhost`
-- Port: `15432`
-- Database: `farmacia_dw`
-- User: `postgres`
-- Password: `postgres`
-
-## Esquemas de PostgreSQL
-
-La base `farmacia_dw` queda separada lógicamente en:
-
-- `raw`: aterrizaje inicial desde Airbyte
-- `staging`: vistas y modelos intermedios de dbt
-- `marts`: dimensiones y hechos finales del DataMart
-
-Puedes validarlo con:
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Y dentro de PostgreSQL:
-
-```sql
-\dn
-```
-
-## Nota sobre Airbyte
-
-Para instalación nueva local, Airbyte ya no recomienda Docker Compose.
-Para esta fase, levanta MySQL y PostgreSQL con este compose y corre Airbyte por separado con `abctl`.
-
-Cuando configures el destination PostgreSQL en Airbyte, apunta a:
-
-- Database: `farmacia_dw`
-- Schema: `raw`
-
-## Configuración recomendada en Airbyte
-
-### Source MySQL
-
-- Source name: `mysql-farmadb`
-- Host: `host.docker.internal`
-- Port: `13306`
-- Database: `farmadb`
-- Username: `root`
-- Password: `root`
-
-### Destination PostgreSQL
-
-- Destination name: `postgres-farmacia-raw`
-- Host: `host.docker.internal`
-- Port: `15432`
-- Database: `farmacia_dw`
-- Schema: `raw`
-- Username: `postgres`
-- Password: `postgres`
-
-### Connection
-
-Para esta práctica, usa:
-
-- tablas: `categorias`, `clientes`, `familias`, `pedido_detalles`, `pedidos`, `productos`, `vendedores`
-- modo por tabla: `Incremental | Append + Deduped`
-- cursor recomendado: `fecha_modificacion`
-- cursor alternativo: `fecha_creacion`
-- frecuencia: `Manual` o `Every 24 hours`
-
-## Limpieza previa recomendada del laboratorio (opcional)
-
-Si ya existe una conexión previa en Airbyte y quieres rehacer la práctica desde cero:
-
-1. elimina la `connection`
-2. si deseas una limpieza total, elimina también el `source` y el `destination`
-3. limpia el schema `raw` en PostgreSQL antes de volver a sincronizar
-
-Limpieza opcional del schema `raw`:
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Luego:
-
-```sql
-DROP SCHEMA raw CASCADE;
-CREATE SCHEMA raw;
-```
-
-## Validación después del Sync
-
-Después de ejecutar `Sync now` en Airbyte, valida la carga con:
-
-```powershell
-docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
-```
-
-Dentro de PostgreSQL:
-
-```sql
-\dt raw.*
-SELECT * FROM raw.categorias LIMIT 10;
-SELECT * FROM raw.productos LIMIT 10;
-SELECT * FROM raw.pedidos LIMIT 10;
-```
-
-## Instalar Airbyte en Windows
-
-### Opción recomendada (PowerShell)
+### Opcion recomendada (PowerShell)
 
 Abre PowerShell como administrador.
 
-#### Paso 1. Instalar `abctl`
+### Paso 1. Instalar `abctl`
 
-Primero consulta los archivos publicados en el release más reciente:
+Primero consulta los archivos publicados en el release mas reciente:
 
 ```powershell
 $release = Invoke-RestMethod -Uri "https://api.github.com/repos/airbytehq/abctl/releases/latest"
@@ -212,12 +62,12 @@ abctl-v0.30.4-windows-arm64.zip
 abctl_0.30.4_checksums.txt
 ```
 
-Luego elige el archivo que corresponda a tu máquina:
+Luego elige el archivo que corresponda a tu maquina:
 
 - `windows-amd64.zip`: Windows de 64 bits sobre Intel/AMD
 - `windows-arm64.zip`: Windows sobre ARM
 
-Después ejecuta este bloque en la misma ventana de PowerShell. Aquí se usa `windows-amd64` como ejemplo:
+Despues ejecuta este bloque en la misma ventana de PowerShell. Aqui se usa `windows-amd64` como ejemplo:
 
 ```powershell
 $asset = $release.assets | Where-Object { $_.name -eq "abctl-v0.30.4-windows-amd64.zip" } | Select-Object -First 1
@@ -233,7 +83,7 @@ $env:Path += ";$abctlDir"
 abctl version
 ```
 
-#### Paso 2. Desplegar Airbyte local
+### Paso 2. Desplegar Airbyte local
 
 Con Docker Desktop ya iniciado, ejecuta:
 
@@ -242,10 +92,85 @@ abctl local install --port 8010
 abctl local credentials
 ```
 
-Airbyte debería quedar disponible en `http://localhost:8010`.
+Airbyte deberia quedar disponible en:
 
-Para obtener la contraseña, ejecuta:
+```text
+http://localhost:8010
+```
+
+Para obtener la contrasena, ejecuta:
 
 ```powershell
 abctl local credentials
 ```
+
+## Operacion minima
+
+### 1. Verificar Airbyte local
+
+```powershell
+abctl version
+abctl local credentials
+```
+
+Interfaz esperada:
+
+```text
+http://localhost:8010
+```
+
+### 2. Verificar componentes auxiliares
+
+```powershell
+cd C:\261bi\farmacia-bi\oltp-mysql
+docker compose ps
+
+cd C:\261bi\farmacia-bi\dw-pg
+docker compose ps
+```
+
+### 3. Configurar la replicacion
+
+Desde la interfaz de Airbyte:
+
+- crea o selecciona el `source`
+- crea o selecciona el `destination`
+- crea la `connection`
+- ejecuta `Sync now`
+
+## Validacion minima
+
+Verifica que los datos hayan aterrizado en la base analitica destino:
+
+```powershell
+docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
+```
+
+Luego:
+
+```sql
+\dt raw.*
+select * from raw.categorias limit 10;
+select * from raw.productos limit 10;
+select * from raw.pedidos limit 10;
+```
+
+## Integracion
+
+De forma general, este modulo:
+
+- consume datos desde una fuente operativa
+- los replica hacia una capa de aterrizaje
+- deja lista la entrada para una fase de transformacion posterior
+
+En `farmacia-bi`, eso significa:
+
+- leer desde `oltp-mysql/`
+- escribir en `dw-pg/` schema `raw`
+- dejar preparada la entrada para `dw-dbt/`
+
+## Guia relacionada
+
+La configuracion detallada del caso `farmacia-bi` esta en:
+
+- [SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)

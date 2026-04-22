@@ -1,74 +1,51 @@
 # DW dbt
 
-Este directorio contiene el entorno base para trabajar con `dbt` sobre PostgreSQL usando Docker.
+## Proposito
 
-## Guias principales de la sesion
+Este directorio contiene el proyecto `dbt` que transforma la capa `raw` y construye el modelo estrella final.
 
-- [SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
-- [SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)
+## Rol en la arquitectura
 
-## Objetivo
+```text
+MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
+```
 
-Levantar un contenedor con `dbt-core` y `dbt-postgres` para construir el diseno fisico del `Data Warehouse` y los `Data Marts` a partir de la capa `raw` ya cargada por Airbyte.
+## Prerequisitos
 
-## Archivos
+Antes de usar este modulo deben estar operativos:
 
-- `Dockerfile`: imagen base con Python 3.11, `dbt-core` y `dbt-postgres`
-- `docker-compose.yml`: servicio `dbt` para desarrollo local
+- `dw-pg/` con la base `farmacia_dw`
+- `raw` cargado por Airbyte
 
-## Levantar el contenedor
+## Configuracion clave
 
-Ubicate en:
+- contenedor: `farmacia-dw-dbt`
+- proyecto dbt: `farmacia_bi`
+- profile: `.dbt/profiles.yml`
+- schema base del target: `marts`
+
+Capas del proyecto:
+
+- `staging`: vistas limpias y homologadas
+- `marts`: dimensiones y hecho final
+
+## Operacion minima
+
+Levantar el contenedor:
 
 ```powershell
 cd C:\261bi\farmacia-bi\dw-dbt
-```
-
-Construye y levanta el servicio:
-
-```powershell
 docker compose up -d --build
-```
-
-## Verificar el contenedor
-
-```powershell
 docker compose ps
 ```
 
-Resultado esperado:
-
-- contenedor `farmacia-dw-dbt` en estado `Up`
-
-## Ingresar al contenedor
+Ingresar:
 
 ```powershell
 docker exec -it farmacia-dw-dbt bash
 ```
 
-## Verificar dbt
-
-Dentro del contenedor, ejecuta:
-
-```bash
-dbt --version
-```
-
-Debes ver instalados:
-
-- `dbt-core`
-- `dbt-postgres`
-
-## Flujo recomendado de trabajo
-
 Dentro del contenedor:
-
-```bash
-cd /usr/app/farmacia_bi
-dbt debug
-```
-
-Luego del taller:
 
 ```bash
 cd /usr/app/farmacia_bi
@@ -78,43 +55,23 @@ dbt run --select +marts
 dbt test --select marts
 ```
 
-## Modelos actuales del proyecto
+## Validacion minima
 
-### Staging
+En PostgreSQL:
 
-- `stg_clientes`
-- `stg_vendedores`
-- `stg_familias`
-- `stg_categorias`
-- `stg_productos`
-- `stg_pedidos`
-- `stg_pedido_detalles`
-
-### Marts
-
-- `dim_cliente`
-- `dim_vendedor`
-- `dim_producto`
-- `dim_fecha`
-- `dim_estado_pedido`
-- `fact_ventas`
-
-## Flujo esperado del proyecto
-
-```text
-MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
+```sql
+\dv staging.*
+\dt marts.*
+select * from marts.fact_ventas limit 20;
 ```
 
-## Nota de diseno
+## Integracion
 
-En este proyecto:
+- consume `raw` desde `dw-pg/`
+- construye `staging` y `marts`
+- deja listo el modelo para `powerbi/`
 
-- `staging` se construye por tabla fuente relevante del OLTP
-- `dim_producto` queda denormalizada con atributos de categoria y familia
-- `fact_ventas` se construye con grano de una fila por linea de pedido por producto
-- la sesion con dbt usa `estado_pedido_key` en la dimension de estado y en el hecho
+## Guias relacionadas
 
-## Nota
-
-Este contenedor no ejecuta `dbt` automaticamente al iniciar.
-Queda en modo interactivo para que puedas entrar y trabajar paso a paso durante la practica.
+- [SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
+- [SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)
