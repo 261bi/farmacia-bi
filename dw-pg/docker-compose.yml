@@ -23,4 +23,5 @@ volumes:
 
 networks:
   farmacia-bi-net:
+    external: true
     name: farmacia-bi-net

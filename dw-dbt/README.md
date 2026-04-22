@@ -66,6 +66,14 @@ Dentro del contenedor:
 ```bash
 cd /usr/app/farmacia_bi
 dbt debug
+
+```
+
+Luego del taller:
+
+```bash
+cd /usr/app/farmacia_bi
+dbt debug
 dbt run --select staging
 dbt run --select +marts
 dbt run --select +fact_ventas

@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: dim_cliente
+    columns:
+      - name: cliente_key
+        tests:
+          - not_null
+          - unique
+      - name: cliente_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_vendedor
+    columns:
+      - name: vendedor_key
+        tests:
+          - not_null
+          - unique
+      - name: vendedor_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_producto
+    columns:
+      - name: producto_key
+        tests:
+          - not_null
+          - unique
+      - name: producto_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_fecha
+    columns:
+      - name: fecha_key
+        tests:
+          - not_null
+          - unique
+      - name: fecha
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_estado_pedido
+    columns:
+      - name: estado_pedido_key
+        tests:
+          - not_null
+          - unique
+      - name: estado_pedido
+        tests:
+          - not_null
+          - unique
+
+  - name: fact_ventas
+    columns:
+      - name: fecha_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_fecha')
+                field: fecha_key
+      - name: cliente_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cliente')
+                field: cliente_key
+      - name: vendedor_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_vendedor')
+                field: vendedor_key
+      - name: producto_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_producto')
+                field: producto_key
+      - name: estado_pedido_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_estado_pedido')
+                field: estado_pedido_key
+      - name: pedido_id
+        tests:
+          - not_null
+      - name: producto_id
+        tests:
+          - not_null
+      - name: cantidad_vendida
+        tests:
+          - not_null
+      - name: pedido_count
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1]

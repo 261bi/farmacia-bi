@@ -198,7 +198,17 @@ Trabaja con estas tablas:
 - `productos`
 - `vendedores`
 
-Configuracion recomendada:
+En la pantalla `Select sync mode`, elige:
+
+- `Replicate Source`
+
+Interpretacion:
+
+- esta opcion mantiene una copia actualizada de la fuente en el destino
+- para esta practica no se busca guardar historial completo de cambios en la capa `raw`
+- por eso no se elige `Append Historical Changes`
+
+Configuracion recomendada de streams:
 
 - modo por tabla: `Incremental | Append + Deduped`
 - cursor recomendado: `fecha_modificacion`
@@ -213,7 +223,82 @@ Observacion didactica:
 - si alguna tabla o configuracion puntual del conector no se deja resolver bien en incremental, puedes usar `Full refresh | Overwrite` como respaldo
 - pero con el `farmadb` actual, la explicacion base ya debe presentar el uso de `cursor`
 
-### 8.8 Ejecuta la primera sincronizacion
+### 8.8 Configura cada stream paso a paso
+
+En la lista de tablas, configura cada una asi:
+
+- `categorias`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `clientes`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `familias`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `pedidos`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `productos`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `vendedores`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `id`
+  - cursor: `fecha_modificacion`
+- `pedido_detalles`
+  - sync mode: `Incremental | Append + Deduped`
+  - primary key: `pedido_id`, `producto_id`
+  - cursor: `fecha_modificacion`
+
+Importante:
+
+- en Airbyte, la `primary key` y el `cursor` no son lo mismo
+- la `primary key` sirve para deduplicar
+- el `cursor` sirve para detectar registros nuevos o modificados
+- por eso es normal que `id` quede fijo como `primary key` y que el campo que si cambias sea `fecha_modificacion`
+
+### 8.9 Configura la conexion
+
+En la pantalla `Configure connection`, usa:
+
+- Connection name: `mysql-farmadb -> postgres-farmacia-raw`
+- Schedule type: `Manual`
+- Destination Namespace: `Destination-defined`
+- Stream Prefix: vacio
+
+Interpretacion:
+
+- `Manual` es mejor para laboratorio porque el estudiante controla cuando sincronizar
+- `Destination-defined` mantiene el schema `raw` definido en el destination
+- el prefijo se deja vacio para no alterar los nombres de las tablas aterrizadas
+
+### 8.10 Revisa la configuracion avanzada
+
+En `Advanced settings`, deja:
+
+- `Propagate field changes only`
+- `Be notified when schema changes occur`: activado
+- `Backfill new or renamed columns`: apagado
+
+Interpretacion:
+
+- `Propagate field changes only`
+  - Airbyte propaga cambios compatibles de columnas
+  - evita una automatizacion excesiva sobre tablas o streams completos
+- `Be notified when schema changes occur`
+  - Airbyte avisa si el esquema de la fuente cambia
+- `Backfill new or renamed columns`
+  - se deja apagado para no complicar la practica con recargas historicas adicionales
+
+Con esto, la practica queda estable y controlable para clase.
+
+### 8.11 Ejecuta la primera sincronizacion
 
 Desde la conexion creada, ejecuta:
 
@@ -223,7 +308,7 @@ Resultado esperado:
 
 - la sincronizacion termina en estado `Succeeded`
 
-### 8.9 Valida que Airbyte cargo datos en `raw`
+### 8.12 Valida que Airbyte cargo datos en `raw`
 
 ```powershell
 docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
