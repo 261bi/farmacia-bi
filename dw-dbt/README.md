@@ -9,7 +9,7 @@ Este directorio contiene el entorno base para trabajar con `dbt` sobre PostgreSQ
 
 ## Objetivo
 
-Levantar un contenedor con `dbt-core` y `dbt-postgres` para construir el diseño físico del `Data Warehouse` y los `Data Marts` a partir de la capa `raw` ya cargada por Airbyte.
+Levantar un contenedor con `dbt-core` y `dbt-postgres` para construir el diseno fisico del `Data Warehouse` y los `Data Marts` a partir de la capa `raw` ya cargada por Airbyte.
 
 ## Archivos
 
@@ -18,7 +18,7 @@ Levantar un contenedor con `dbt-core` y `dbt-postgres` para construir el diseño
 
 ## Levantar el contenedor
 
-Ubícate en:
+Ubicate en:
 
 ```powershell
 cd C:\261bi\farmacia-bi\dw-dbt
@@ -66,7 +66,6 @@ Dentro del contenedor:
 ```bash
 cd /usr/app/farmacia_bi
 dbt debug
-
 ```
 
 Luego del taller:
@@ -76,7 +75,7 @@ cd /usr/app/farmacia_bi
 dbt debug
 dbt run --select staging
 dbt run --select +marts
-dbt run --select +fact_ventas
+dbt test --select marts
 ```
 
 ## Modelos actuales del proyecto
@@ -106,15 +105,16 @@ dbt run --select +fact_ventas
 MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
 ```
 
-## Nota de diseño
+## Nota de diseno
 
 En este proyecto:
 
 - `staging` se construye por tabla fuente relevante del OLTP
-- `dim_producto` queda denormalizada con atributos de categoría y familia
-- `fact_ventas` se construye con grano de una fila por línea de pedido por producto
+- `dim_producto` queda denormalizada con atributos de categoria y familia
+- `fact_ventas` se construye con grano de una fila por linea de pedido por producto
+- la sesion con dbt usa `estado_pedido_key` en la dimension de estado y en el hecho
 
 ## Nota
 
-Este contenedor no ejecuta `dbt` automáticamente al iniciar.
-Queda en modo interactivo para que puedas entrar y trabajar paso a paso durante la práctica.
+Este contenedor no ejecuta `dbt` automaticamente al iniciar.
+Queda en modo interactivo para que puedas entrar y trabajar paso a paso durante la practica.

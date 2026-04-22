@@ -109,7 +109,30 @@ Debes ver:
 - `staging`
 - `marts`
 
-### 3. Configurar Airbyte para aterrizar en `raw`
+### 3. Instalar o verificar Airbyte local
+
+En este laboratorio, Airbyte se trabaja por separado con `abctl`.
+
+Si ya lo tienes instalado y operativo, puedes verificar acceso en:
+
+```text
+http://localhost:8010
+```
+
+Si todavia no lo tienes instalado, en PowerShell como administrador ejecuta:
+
+```powershell
+abctl version
+abctl local install --port 8010
+abctl local credentials
+```
+
+Resultado esperado:
+
+- Airbyte queda disponible en `http://localhost:8010`
+- puedes recuperar las credenciales con `abctl local credentials`
+
+### 4. Configurar Airbyte para aterrizar en `raw`
 
 En este laboratorio Airbyte se usa como instalacion separada y manual.
 
@@ -138,15 +161,18 @@ http://localhost:8010
 
 #### Configuracion de la conexion
 
-Para este laboratorio, si las tablas no tienen un buen campo cursor, trabaja con:
+Para este laboratorio, trabaja con:
 
-- `Full refresh | Overwrite`
+- `Replicate Source`
+- modo por tabla: `Incremental | Append + Deduped`
+- cursor recomendado: `fecha_modificacion`
+- cursor alternativo: `fecha_creacion`
 
 Luego ejecuta:
 
 - `Sync now`
 
-### 4. Validar que Airbyte cargo datos en `raw`
+### 5. Validar que Airbyte cargo datos en `raw`
 
 ```powershell
 docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
@@ -161,7 +187,7 @@ SELECT * FROM raw.productos LIMIT 10;
 SELECT * FROM raw.pedidos LIMIT 10;
 ```
 
-### 5. Levantar el entorno dbt
+### 6. Levantar el entorno dbt
 
 ```powershell
 cd C:\261bi\farmacia-bi\dw-dbt
@@ -175,7 +201,7 @@ Ingresar al contenedor:
 docker exec -it farmacia-dw-dbt bash
 ```
 
-### 6. Ejecutar dbt
+### 7. Ejecutar dbt
 
 Dentro del contenedor:
 
@@ -184,10 +210,10 @@ cd /usr/app/farmacia_bi
 dbt debug
 dbt run --select staging
 dbt run --select +marts
-dbt run --select +fact_ventas
+dbt test --select marts
 ```
 
-### 7. Validar el DataMart final
+### 8. Validar el DataMart final
 
 ```powershell
 docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
