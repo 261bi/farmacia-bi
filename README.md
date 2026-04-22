@@ -13,9 +13,9 @@ MySQL OLTP -> Airbyte -> PostgreSQL DW -> dbt -> Power BI
 ```mermaid
 flowchart LR
     A[MySQL OLTP<br/>farmadb] --> B[Airbyte<br/>Ingesta]
-    B --> C[PostgreSQL<br/>raw]
-    C --> D[dbt<br/>staging]
-    D --> E[dbt<br/>marts]
+    B --> C[PostgreSQL RAW<br/>farmacia_dw.raw]
+    C --> D[dbt<br/>Transformacion]
+    D --> E[PostgreSQL DW<br/>farmacia_dw<br/>staging y marts]
     E --> F[Power BI<br/>Consumo analitico]
 ```
 
