@@ -1,36 +1,36 @@
-# Sesion U2 S2 P3: Validacion analitica del DataMart
+# Sesión U2 S2 P3: Validación analítica del DataMart
 
-## 1. Titulo
+## 1. Título
 
-Validacion analitica del DataMart construido con Airbyte, PostgreSQL y dbt.
+Validación analítica del DataMart construido con Airbyte, PostgreSQL y dbt.
 
 ## 2. Objetivo
 
-Validar que la replica en `raw`, la transformacion en `staging` y el modelo final en `marts` responden correctamente al caso de negocio y mantienen consistencia con el OLTP `farmadb`.
+Validar que la réplica en `raw`, la transformación en `staging` y el modelo final en `marts` responden correctamente al caso de negocio y mantienen consistencia con el OLTP `farmadb`.
 
-En esta practica, el foco principal ya no es construir el pipeline, sino comprobar que el DataMart final:
+En esta práctica, el foco principal ya no es construir el pipeline, sino comprobar que el DataMart final:
 
 - conserva el grano esperado
-- responde consultas analiticas coherentes
+- responde consultas analíticas coherentes
 - mantiene consistencia en sus KPIs clave
 
-## 3. Relacion con las practicas previas
+## 3. Relación con las prácticas previas
 
-Esta practica continua directamente desde:
+Esta práctica continúa directamente desde:
 
 1. [SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](../ingesta-airbyte/SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
 2. [SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
 
-## 4. Donde entran los tests de dbt en esta practica
+## 4. Dónde entran los tests de dbt en esta práctica
 
-En esta `P3`, ademas de ejecutar consultas manuales de validacion, ya conviene introducir tests reales de `dbt`.
+En esta `P3`, además de ejecutar consultas manuales de validación, ya conviene introducir tests reales de `dbt`.
 
 En el proyecto actual hay dos niveles:
 
 - tests genericos definidos en `models/marts/marts.yml`
 - tests singulares definidos en `tests/*.sql`
 
-### 4.1 Que hace `marts.yml`
+### 4.1 Qué hace `marts.yml`
 
 El archivo:
 
@@ -43,9 +43,9 @@ define tests genericos sobre columnas y relaciones, por ejemplo:
 - `relationships`
 - `accepted_values`
 
-dbt lee ese archivo YAML y genera automaticamente las consultas SQL de validacion.
+dbt lee ese archivo YAML y genera automáticamente las consultas SQL de validación.
 
-### 4.2 Que hacen los archivos en `tests/`
+### 4.2 Qué hacen los archivos en `tests/`
 
 Los archivos en:
 
@@ -54,13 +54,13 @@ Los archivos en:
 
 son tests singulares.
 
-Se usan para reglas mas especificas del negocio, por ejemplo:
+Se usan para reglas más especificas del negocio, por ejemplo:
 
 - que no existan duplicados por `pedido_id + producto_id`
 - que `venta_neta = venta_bruta - descuento_total`
 - que `margen_bruto = venta_neta - costo_total`
 
-### 4.3 Como interpreta dbt un test
+### 4.3 Cómo interpreta dbt un test
 
 En dbt, un test pasa si devuelve:
 
@@ -68,7 +68,7 @@ En dbt, un test pasa si devuelve:
 
 Y falla si devuelve:
 
-- una o mas filas con problemas
+- una o más filas con problemás
 
 ### 4.4 Comando recomendado
 
@@ -79,19 +79,19 @@ cd /usr/app/farmacia_bi
 dbt test --select marts
 ```
 
-Con eso, dbt ejecuta los tests genericos declarados para `marts` y tambien los tests singulares relacionados.
+Con eso, dbt ejecuta los tests genericos declarados para `marts` y también los tests singulares relaciónados.
 
-## 5. Alcance de esta validacion
+## 5. Alcance de esta validación
 
-La `P1` ya valido la ingesta hacia `raw` y la `P2` ya valido la construccion fisica de `staging` y `marts`.
+La `P1` ya valido la ingesta hacia `raw` y la `P2` ya valido la construcción física de `staging` y `marts`.
 
-Por eso, en esta `P3` solo haremos una comprobacion minima de capas y luego concentraremos la atencion en:
+Por eso, en esta `P3` solo haremos una comprobacion mínima de capas y luego concentraremos la atencion en:
 
 - el grano de `fact_ventas`
 - la consistencia de los KPIs
-- el uso analitico del modelo estrella
+- el uso analítico del modelo estrella
 
-## 6. Validacion minima de capas
+## 6. Validación mínima de capas
 
 ### 6.1 Validar `raw`
 
@@ -119,11 +119,11 @@ SELECT * FROM marts.dim_producto LIMIT 10;
 SELECT * FROM marts.fact_ventas LIMIT 20;
 ```
 
-## 7. Validacion del grano del hecho
+## 7. Validación del grano del hecho
 
 El grano esperado es:
 
-- una fila por linea de pedido por producto
+- una fila por línea de pedido por producto
 
 ```sql
 SELECT COUNT(*) AS total_raw_detalle
@@ -145,7 +145,7 @@ GROUP BY pedido_id, producto_id
 HAVING COUNT(*) > 1;
 ```
 
-## 8. Validacion de KPIs comerciales
+## 8. Validación de KPIs comerciales
 
 ### 8.1 Ventas netas
 
@@ -172,7 +172,7 @@ FROM raw.pedido_detalles;
 
 Ambos resultados deben coincidir.
 
-## 9. Validacion de dimensiones
+## 9. Validación de dimensiones
 
 ```sql
 SELECT * FROM marts.dim_cliente LIMIT 10;
@@ -182,9 +182,9 @@ SELECT * FROM marts.dim_fecha LIMIT 10;
 SELECT * FROM marts.dim_estado_pedido LIMIT 10;
 ```
 
-Aqui no buscamos revisar cada columna una por una, sino comprobar que las dimensiones existen, cargaron datos y pueden servir como ejes de analisis del hecho.
+Aquí no buscamos revisar cada columna una por una, sino comprobar que las dimensiones existen, cargaron datos y pueden servir como ejes de análisis del hecho.
 
-## 10. Consultas analiticas del caso
+## 10. Consultas analíticas del caso
 
 ### 10.1 Ventas por producto
 
@@ -230,15 +230,15 @@ FROM marts.fact_ventas;
 - captura de tablas en `marts`
 - captura de `dbt test --select marts`
 - captura del conteo `raw.pedido_detalles` vs `marts.fact_ventas`
-- captura de una validacion de KPI comercial
-- captura de una consulta analitica final
+- captura de una validación de KPI comercial
+- captura de una consulta analítica final
 
 ## 12. Cierre
 
-Con esta practica se cierra la sesion 2 del pipeline BI con herramientas. El estudiante valida que:
+Con esta práctica se cierra la sesión 2 del pipeline BI con herramientas. El estudiante valida que:
 
 - Airbyte replica correctamente desde `farmadb`
 - dbt transforma correctamente desde `raw` hacia `staging` y `marts`
 - el modelo final responde al caso de negocio
 - `fact_ventas` conserva el grano esperado
-- el DataMart puede responder preguntas comerciales y operativas basicas
+- el DataMart puede responder preguntas comerciales y operativas básicas

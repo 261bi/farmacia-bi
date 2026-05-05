@@ -1,6 +1,6 @@
 # DW PostgreSQL
 
-## Proposito
+## Propósito
 
 Esta carpeta contiene la base PostgreSQL que aloja el `Data Warehouse` y el `DataMart` del proyecto.
 
@@ -10,7 +10,7 @@ Esta carpeta contiene la base PostgreSQL que aloja el `Data Warehouse` y el `Dat
 MySQL -> Airbyte -> PostgreSQL (raw, staging, marts) -> dbt -> Power BI
 ```
 
-## Configuracion clave
+## Configuración clave
 
 - motor: `PostgreSQL 16`
 - contenedor: `farmacia-dw-pg`
@@ -26,11 +26,11 @@ Schemas esperados:
 - `staging`
 - `marts`
 
-Script de inicializacion:
+Script de inicialización:
 
 - `postgres/init/01_create_schemas.sql`
 
-## Operacion minima
+## Operación mínima
 
 Levantar el servicio:
 
@@ -46,7 +46,7 @@ Acceso opcional al motor:
 docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
 ```
 
-## Validacion minima
+## Validación mínima
 
 Dentro de PostgreSQL:
 
@@ -57,13 +57,13 @@ Dentro de PostgreSQL:
 \dt marts.*
 ```
 
-## Integracion
+## Integración
 
 - `ingesta-airbyte/` aterriza datos en `raw`
 - `dw-dbt/` transforma `raw` hacia `staging` y `marts`
 - `powerbi/` consume principalmente `marts`
 
-## Guias relacionadas
+## Guías relacionadas
 
 - [../ingesta-airbyte/SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](../ingesta-airbyte/SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
 - [../dw-dbt/SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](../dw-dbt/SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)

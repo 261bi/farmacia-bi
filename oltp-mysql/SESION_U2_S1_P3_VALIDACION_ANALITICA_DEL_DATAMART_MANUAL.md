@@ -12,7 +12,7 @@ Esta sesión tiene tres objetivos:
 
 - comprobar que el DataMart manual fue cargado correctamente
 - validar indicadores y consultas analíticas contra el OLTP
-- reconocer las limitaciones del enfoque manual dentro del mismo motor transaccional
+- reconocer las limitaciónes del enfoque manual dentro del mismo motor transaccional
 
 ## 3. Relación con las sesiones previas
 
@@ -444,7 +444,7 @@ Después de esta validación, el estudiante debe ser capaz de concluir:
 
 ## 14. Limitaciones del enfoque manual
 
-Aunque esta implementación cumple un objetivo pedagógico importante, presenta limitaciones claras:
+Aunque esta implementación cumple un objetivo pedagógico importante, presenta limitaciónes claras:
 
 - OLTP y DataMart conviven en el mismo motor
 - el ETL se ejecuta manualmente
@@ -452,7 +452,7 @@ Aunque esta implementación cumple un objetivo pedagógico importante, presenta 
 - no existe separación entre `raw`, `staging` y `marts`
 - la escalabilidad y el mantenimiento son limitados
 
-Estas limitaciones justifican la siguiente sesión macro del curso:
+Estas limitaciónes justifican la siguiente sesión macro del curso:
 
 - Airbyte para la ingesta
 - PostgreSQL como DW

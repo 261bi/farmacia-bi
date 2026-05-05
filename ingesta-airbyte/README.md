@@ -1,14 +1,14 @@
 # Ingesta Airbyte
 
-## Proposito
+## Propósito
 
-Esta carpeta documenta el uso de Airbyte como modulo de ingesta para mover datos desde una fuente operativa hacia una base analitica.
+Esta carpeta documenta el uso de Airbyte como módulo de ingesta para mover datos desde una fuente operativa hacia una base analítica.
 
-La logica es reutilizable en otros proyectos donde se necesite:
+La lógica es reutilizable en otros proyectos donde se necesite:
 
 - conectar una fuente transaccional
-- replicar datos hacia una capa de aterrizaje
-- dejar lista la entrada para una fase posterior de transformacion
+- réplicar datos hacia una capa de aterrizaje
+- dejar lista la entrada para una fase posterior de transformación
 
 ## Rol en la arquitectura
 
@@ -26,7 +26,7 @@ MySQL (farmadb) -> Airbyte -> PostgreSQL (farmacia_dw.raw)
 
 ## Prerequisitos
 
-Antes de usar este modulo deben estar operativos:
+Antes de usar este módulo deben estar operativos:
 
 - `oltp-mysql/`
 - `dw-pg/`
@@ -43,7 +43,7 @@ Abre PowerShell como administrador.
 
 ### Paso 1. Instalar `abctl`
 
-Primero consulta los archivos publicados en el release mas reciente:
+Primero consulta los archivos publicados en el release más reciente:
 
 ```powershell
 $release = Invoke-RestMethod -Uri "https://api.github.com/repos/airbytehq/abctl/releases/latest"
@@ -62,12 +62,12 @@ abctl-v0.30.4-windows-arm64.zip
 abctl_0.30.4_checksums.txt
 ```
 
-Luego elige el archivo que corresponda a tu maquina:
+Luego elige el archivo que corresponda a tu maquína:
 
 - `windows-amd64.zip`: Windows de 64 bits sobre Intel/AMD
 - `windows-arm64.zip`: Windows sobre ARM
 
-Despues ejecuta este bloque en la misma ventana de PowerShell. Aqui se usa `windows-amd64` como ejemplo:
+Despues ejecuta este bloque en la misma ventana de PowerShell. Aquí se usa `windows-amd64` como ejemplo:
 
 ```powershell
 $asset = $release.assets | Where-Object { $_.name -eq "abctl-v0.30.4-windows-amd64.zip" } | Select-Object -First 1
@@ -92,7 +92,7 @@ abctl local install --port 8010
 abctl local credentials
 ```
 
-Airbyte deberia quedar disponible en:
+Airbyte debería quedar disponible en:
 
 ```text
 http://localhost:8010
@@ -104,7 +104,7 @@ Para obtener la contrasena, ejecuta:
 abctl local credentials
 ```
 
-## Operacion minima
+## Operación mínima
 
 ### 1. Verificar Airbyte local
 
@@ -129,7 +129,7 @@ cd C:\261bi\farmacia-bi\dw-pg
 docker compose ps
 ```
 
-### 3. Configurar la replicacion
+### 3. Configurar la réplicacion
 
 Desde la interfaz de Airbyte:
 
@@ -138,9 +138,9 @@ Desde la interfaz de Airbyte:
 - crea la `connection`
 - ejecuta `Sync now`
 
-## Validacion minima
+## Validación mínima
 
-Verifica que los datos hayan aterrizado en la base analitica destino:
+Verifica que los datos hayan aterrizado en la base analítica destino:
 
 ```powershell
 docker exec -it farmacia-dw-pg psql -U postgres -d farmacia_dw
@@ -155,13 +155,13 @@ select * from raw.productos limit 10;
 select * from raw.pedidos limit 10;
 ```
 
-## Integracion
+## Integración
 
-De forma general, este modulo:
+De forma general, este módulo:
 
 - consume datos desde una fuente operativa
 - los replica hacia una capa de aterrizaje
-- deja lista la entrada para una fase de transformacion posterior
+- deja lista la entrada para una fase de transformación posterior
 
 En `farmacia-bi`, eso significa:
 
@@ -169,8 +169,8 @@ En `farmacia-bi`, eso significa:
 - escribir en `dw-pg/` schema `raw`
 - dejar preparada la entrada para `dw-dbt/`
 
-## Guia relacionada
+## Guia relaciónada
 
-La configuracion detallada del caso `farmacia-bi` esta en:
+La configuración detallada del caso `farmacia-bi` esta en:
 
 - [SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)

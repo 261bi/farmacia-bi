@@ -1,0 +1,46 @@
+Ventas Brutas = SUM(fact_ventas[venta_bruta])
+
+Descuentos = SUM(fact_ventas[descuento_total])
+
+Ventas Netas = SUM(fact_ventas[venta_neta])
+
+Costo Total = SUM(fact_ventas[costo_total])
+
+Margen Bruto = SUM(fact_ventas[margen_bruto])
+
+Unidades Vendidas = SUM(fact_ventas[cantidad_vendida])
+
+Líneas de Venta = COUNTROWS(fact_ventas)
+
+Pedidos = DISTINCTCOUNT(fact_ventas[pedido_id])
+
+% Margen Bruto = DIVIDE([Margen Bruto], [Ventas Netas])
+
+% Descuento = DIVIDE([Descuentos], [Ventas Brutas])
+
+Ticket Promedio = DIVIDE([Ventas Netas], [Pedidos])
+
+Precio Promedio Neto = DIVIDE([Ventas Netas], [Unidades Vendidas])
+
+Minutos Confirmación Promedio = AVERAGE(fact_ventas[minutos_confirmacion])
+
+Minutos Despacho Promedio = AVERAGE(fact_ventas[minutos_despacho])
+
+Horas Entrega Promedio = AVERAGE(fact_ventas[horas_entrega])
+
+Horas Lead Time Promedio = AVERAGE(fact_ventas[horas_lead_time])
+
+Ventas Netas Acumuladas =
+CALCULATE(
+    [Ventas Netas],
+    FILTER(
+        ALLSELECTED(dim_fecha[fecha]),
+        dim_fecha[fecha] <= MAX(dim_fecha[fecha])
+    )
+)
+
+Participación Ventas Netas =
+DIVIDE(
+    [Ventas Netas],
+    CALCULATE([Ventas Netas], ALLSELECTED())
+)

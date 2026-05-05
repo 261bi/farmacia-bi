@@ -1,19 +1,19 @@
-# Sesion U2 S2 P2: dbt para modelado fisico del DataMart
+# Sesión U2 S2 P2: dbt para modelado físico del DataMart
 
-## 1. Titulo
+## 1. Título
 
-Implementacion del modelado fisico del DataMart sobre PostgreSQL usando dbt.
+Implementación del modelado físico del DataMart sobre PostgreSQL usando dbt.
 
 ## 2. Objetivo
 
-Levantar y validar el entorno `dbt` para continuar la construccion del `Data Warehouse` y del `DataMart`, usando como entrada la capa `raw` cargada previamente por Airbyte.
+Levantar y validar el entorno `dbt` para continuar la construcción del `Data Warehouse` y del `DataMart`, usando como entrada la capa `raw` cargada previamente por Airbyte.
 
-Al finalizar la sesion, el alumno debe poder:
+Al finalizar la sesión, el alumno debe poder:
 
 - levantar el contenedor de `dbt`
 - acceder al contenedor
-- verificar la instalacion de `dbt-core` y `dbt-postgres`
-- comprender el papel de `dbt` en la arquitectura analitica
+- verificar la instalación de `dbt-core` y `dbt-postgres`
+- comprender el papel de `dbt` en la arquitectura analítica
 - construir la capa `staging`
 - construir dimensiones y el hecho principal del DataMart
 
@@ -49,19 +49,19 @@ Equivalencia conceptual:
 - `staging` = `Silver`
 - `marts` = `Gold`
 
-### 5.1 Donde encaja SCD (Slowly Changing Dimensions) en esta sesion
+### 5.1 Dónde encaja SCD (Slowly Changing Dimensions) en esta sesión
 
 En una arquitectura moderna, `SCD` pertenece al modelado dimensional dentro del DW.
 
-En esta sesion:
+En esta sesión:
 
 - dbt decide como modelar las dimensiones en `marts`
-- por eso, conceptualmente, `SCD` ocurre aqui
-- en esta version del laboratorio se trabaja una primera estrella base
+- por eso, conceptualmente, `SCD` ocurre aquí
+- en esta versión del laboratorio se trabaja una primera estrella base
 
 ## 6. Mapa actual del OLTP `farmadb`
 
-Esta practica usa el esquema renombrado actual definido en:
+Esta práctica usa el esquema renombrado actual definido en:
 
 - [farmadb.sql](../oltp-mysql/mysql/init/farmadb.sql)
 
@@ -109,11 +109,11 @@ Importante:
 - `dim_producto` queda denormalizada
 - `categoria` y `familia` no quedan como dimensiones separadas
 - `dim_estado_pedido` usa `estado_pedido_key`
-- `fact_ventas` usa el grano de una fila por linea de pedido por producto
+- `fact_ventas` usa el grano de una fila por línea de pedido por producto
 
-## 8. Desarrollo de la practica
+## 8. Desarrollo de la práctica
 
-### 8.1 Ubicate en el directorio de dbt
+### 8.1 Ubícate en el directorio de dbt
 
 ```powershell
 cd C:\261bi\farmacia-bi\dw-dbt
@@ -143,33 +143,33 @@ Luego:
 cd /usr/app/farmacia_bi
 ```
 
-### 8.4 Verifica la instalacion de dbt
+### 8.4 Verifica la instalación de dbt
 
 ```bash
 dbt --version
 ```
 
-Aqui debes confirmar que estan instalados:
+Aquí debes confirmar que están instalados:
 
 - `dbt-core`
 - `dbt-postgres`
 
-### 8.5 Verifica la configuracion con `dbt debug`
+### 8.5 Verifica la configuración con `dbt debug`
 
 ```bash
 dbt debug
 ```
 
-#### ¿Que hace `dbt debug`?
+#### ¿Qué hace `dbt debug`?
 
 Antes de ejecutar modelos, conviene entender dos archivos base del proyecto:
 
 - `profiles.yml`
 - `dbt_project.yml`
 
-### 8.5.0 Como entender `profiles.yml` y `dbt_project.yml`
+### 8.5.0 Cómo entender `profiles.yml` y `dbt_project.yml`
 
-Piensalo como una separacion de responsabilidades:
+Piénsalo como una separación de responsabilidades:
 
 ```text
 profiles.yml
@@ -212,12 +212,12 @@ farmacia_bi:
       threads: 1
 ```
 
-Lectura pedagogica:
+Lectura pedagógica:
 
 - `host: farmacia-dw-pg`
   - dbt se conecta al contenedor PostgreSQL
 - `dbname: farmacia_dw`
-  - esta es la base analitica donde se construyen los modelos
+  - esta es la base analítica donde se construyen los modelos
 - `schema: marts`
   - este es el schema base del target actual
 - `target: dev`
@@ -236,7 +236,7 @@ models:
       +schema: marts
 ```
 
-Lectura pedagogica:
+Lectura pedagógica:
 
 - `staging`
   - sus modelos se construyen como vistas
@@ -263,7 +263,7 @@ generate_schema_name.sql
     -> permite usar staging y marts como schemas reales separados
 ```
 
-`dbt debug` verifica que el proyecto este listo para trabajar.
+`dbt debug` verifica que el proyecto esté listo para trabajar.
 
 En particular, valida:
 
@@ -273,12 +273,12 @@ En particular, valida:
 - que el entorno base del proyecto este correctamente configurado
 - que el target activo apunte a la base, host, puerto y schema esperados
 
-Interpretacion didactica:
+Interpretación didactica:
 
-- `dbt --version` responde a la pregunta: "¿dbt esta instalado?"
-- `dbt debug` responde a la pregunta: "¿dbt esta listo para trabajar con este proyecto y esta base?"
+- `dbt --version` responde a la pregunta: "¿dbt está instalado?"
+- `dbt debug` responde a la pregunta: "¿dbt está listo para trabajar con este proyecto y esta base?"
 
-Si `dbt debug` falla, no conviene avanzar a `dbt run`, porque el problema todavia esta en la configuracion del entorno.
+Si `dbt debug` falla, no conviene avanzar a `dbt run`, porque el problema todavía está en la configuración del entorno.
 
 ### 8.5.1 Nota importante sobre schemas en dbt
 
@@ -350,7 +350,7 @@ SELECT * FROM raw.pedido_detalles LIMIT 10;
 
 ### 8.7 Construye la capa `staging` paso a paso
 
-Antes de correr toda la carpeta `staging`, conviene entender como estan hechos los modelos.
+Antes de correr toda la carpeta `staging`, conviene entender como están hechos los modelos.
 
 Modelos base:
 
@@ -373,7 +373,7 @@ Modelos base:
 - `stg_productos`
   - toma `raw.productos`
   - renombra claves y atributos principales
-  - integra categoria y familia
+  - integra categoría y familia
   - construye `nombre_producto`
 - `stg_pedidos`
   - toma `raw.pedidos`
@@ -432,7 +432,7 @@ Debes comprobar:
 
 - que los nombres fueron homologados
 - que `stg_pedidos` ya usa `pedido_id` y `estado_pedido`
-- que `stg_productos` ya expone `producto_id`, `codigo_producto`, `nombre_producto` y la jerarquia comercial
+- que `stg_productos` ya expone `producto_id`, `codigo_producto`, `nombre_producto` y la jerarquía comercial
 
 ### 8.11 Ejecuta la capa `marts`
 
@@ -449,7 +449,7 @@ Dimensiones actuales:
 - `dim_producto`
   - toma `stg_productos`
   - usa `producto_id` como `producto_key`
-  - conserva `codigo_producto`, `nombre_producto`, categoria y familia
+  - conserva `codigo_producto`, `nombre_producto`, categoría y familia
 - `dim_fecha`
   - toma fechas distintas desde `stg_pedidos`
   - construye `fecha_key` con formato `YYYYMMDD`
@@ -482,7 +482,7 @@ SELECT * FROM marts.dim_cliente LIMIT 10;
 
 ### 8.13 Ejecuta la dimension de producto
 
-Esta dimension es importante porque ya incorpora la denormalizacion de categoria y familia.
+Esta dimension es importante porque ya incorpora la denormalizacion de categoría y familia.
 
 ```bash
 dbt run --select dim_producto
@@ -505,7 +505,7 @@ Debes comprobar:
 - `familia_id`
 - `nombre_familia`
 
-### 8.14 Ejecuta las dimensiones restantes
+### 8.14 Ejecuta las dimensiones restántes
 
 ```bash
 dbt run --select dim_vendedor dim_fecha dim_estado_pedido
@@ -523,7 +523,7 @@ SELECT * FROM marts.dim_estado_pedido LIMIT 10;
 
 Antes de correrlo, recuerda el grano oficial del proyecto:
 
-- una fila por linea de pedido por producto
+- una fila por línea de pedido por producto
 
 Ahora ejecuta:
 
@@ -570,7 +570,7 @@ SELECT * FROM marts.dim_estado_pedido LIMIT 10;
 SELECT * FROM marts.fact_ventas LIMIT 20;
 ```
 
-### 8.18 Que debes observar en `fact_ventas`
+### 8.18 Qué debes observar en `fact_ventas`
 
 Debes comprobar especialmente:
 
@@ -585,7 +585,7 @@ Debes comprobar especialmente:
   - `costo_total`
   - `margen_bruto`
   - `pct_margen_bruto`
-- que los tiempos operativos tambien esten presentes:
+- que los tiempos operativos también esten presentes:
   - `minutos_confirmacion`
   - `minutos_despacho`
   - `horas_entrega`
@@ -595,7 +595,7 @@ Debes comprobar especialmente:
 
 `fact_ventas` se construyo con este grano:
 
-- una fila por linea de pedido por producto
+- una fila por línea de pedido por producto
 
 Claves dimensionales usadas en el proyecto actual:
 
@@ -621,9 +621,9 @@ Campos de trazabilidad conservados:
 
 ## 11. Cierre
 
-En esta sesion queda validado que:
+En esta sesión queda validado que:
 
 - `staging` se construye por tabla fuente del OLTP
 - `marts` implementa la estrella final del caso
 - `fact_ventas` integra cabecera, detalle y dimensiones
-- el DataMart fisico base queda listo para validacion analitica
+- el DataMart físico base queda listo para validación analítica

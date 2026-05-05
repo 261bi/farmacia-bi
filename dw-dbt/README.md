@@ -1,6 +1,6 @@
 # DW dbt
 
-## Proposito
+## Propósito
 
 Este directorio contiene el proyecto `dbt` que transforma la capa `raw` y construye el modelo estrella final.
 
@@ -12,12 +12,12 @@ MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
 
 ## Prerequisitos
 
-Antes de usar este modulo deben estar operativos:
+Antes de usar este módulo deben estar operativos:
 
 - `dw-pg/` con la base `farmacia_dw`
 - `raw` cargado por Airbyte
 
-## Configuracion clave
+## Configuración clave
 
 - contenedor: `farmacia-dw-dbt`
 - proyecto dbt: `farmacia_bi`
@@ -29,7 +29,7 @@ Capas del proyecto:
 - `staging`: vistas limpias y homologadas
 - `marts`: dimensiones y hecho final
 
-## Operacion minima
+## Operación mínima
 
 Levantar el contenedor:
 
@@ -55,7 +55,7 @@ dbt run --select +marts
 dbt test --select marts
 ```
 
-## Validacion minima
+## Validación mínima
 
 En PostgreSQL:
 
@@ -65,13 +65,13 @@ En PostgreSQL:
 select * from marts.fact_ventas limit 20;
 ```
 
-## Integracion
+## Integración
 
 - consume `raw` desde `dw-pg/`
 - construye `staging` y `marts`
 - deja listo el modelo para `powerbi/`
 
-## Guias relacionadas
+## Guías relacionadas
 
 - [SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
 - [SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)

@@ -1,14 +1,14 @@
 # OLTP MySQL
 
-## Proposito
+## Propósito
 
 Esta carpeta contiene el origen transaccional del proyecto `farmacia-bi`.
 
-Aqui viven:
+Aquí viven:
 
 - la base `farmadb` en MySQL
-- el script de inicializacion del OLTP
-- la fase manual de la sesion 1
+- el script de inicialización del OLTP
+- la fase manual de la sesión 1
 
 ## Rol en la arquitectura
 
@@ -16,7 +16,7 @@ Aqui viven:
 MySQL (farmadb) -> Airbyte o ETL manual -> DataMart / DW
 ```
 
-## Configuracion clave
+## Configuración clave
 
 - motor: `MySQL 8.4`
 - contenedor: `farmacia-oltp-mysql`
@@ -30,7 +30,7 @@ Script base del OLTP:
 
 - `mysql/init/farmadb.sql`
 
-## Operacion minima
+## Operación mínima
 
 Levantar el servicio:
 
@@ -57,10 +57,10 @@ Orden recomendado:
 Uso de cada script:
 
 - `1_dm.sql`: crea dimensiones y tabla de hechos del DataMart manual
-- `2_G_pasos.sql`: explica la construccion pedagogica de la vista `G`
+- `2_G_pasos.sql`: explica la construcción pedagógica de la vista `G`
 - `3_poblar.sql`: carga dimensiones, `vw_g_ventas` y `fact_ventas`
 
-## Validacion minima
+## Validación mínima
 
 Dentro de MySQL puedes validar:
 
@@ -70,12 +70,12 @@ select count(*) from pedidos;
 select count(*) from pedido_detalles;
 ```
 
-## Integracion
+## Integración
 
-- este modulo es la fuente para `ingesta-airbyte/`
-- en la sesion 1 tambien se usa directamente para el ETL manual
+- este módulo es la fuente para `ingesta-airbyte/`
+- en la sesión 1 también se usa directamente para el ETL manual
 
-## Guias relacionadas
+## Guías relacionadas
 
 - [SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md](SESION_U2_S1_P1_IMPLEMENTACION_FISICA_MANUAL_DEL_DATAMART_DENTRO_DEL_MISMO_OLTP.md)
 - [SESION_U2_S1_P2_ETL_MANUAL_CON_SQL_PARA_DIMENSIONES_Y_HECHO_MEDIANTE_LA_VISTA_G.md](SESION_U2_S1_P2_ETL_MANUAL_CON_SQL_PARA_DIMENSIONES_Y_HECHO_MEDIANTE_LA_VISTA_G.md)
