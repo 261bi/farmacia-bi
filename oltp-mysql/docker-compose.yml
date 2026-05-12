@@ -2,9 +2,17 @@ name: farmacia-bi-oltp
 
 services:
   mysql-farmadb:
-    image: mysql:8.4
+    image: mysql:8.0
     container_name: farmacia-oltp-mysql
     restart: unless-stopped
+    command:
+      - --server-id=223344
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --binlog-row-image=FULL
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: farmadb
@@ -12,13 +20,18 @@ services:
     ports:
       - "13306:3306"
     volumes:
-      - mysql_farmadb_data:/var/lib/mysql
+      - mysql_farmadb_cdc_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
     networks:
       - farmacia-bi-net
 
 volumes:
-  mysql_farmadb_data:
+  mysql_farmadb_cdc_data:
 
 networks:
   farmacia-bi-net:
