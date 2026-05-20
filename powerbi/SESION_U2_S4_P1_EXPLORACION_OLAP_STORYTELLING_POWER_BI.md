@@ -13,7 +13,6 @@ Al finalizar la práctica, el alumno debe poder:
 - navegar la jerarquía `Calendario`
 - navegar la jerarquía `Producto Comercial`
 - analizar ventas netas por año, mes, día, familia, categoría y producto
-- ordenar correctamente días de semana
 - usar drill-down, drill-up y drill-through
 - usar tooltips para ampliar contexto
 - identificar picos, caídas y concentraciones de venta
@@ -86,6 +85,20 @@ Valores:
 - `[Pedidos]`
 - `[Unidades Vendidas]`
 - `[Ticket Promedio]`
+
+Interpretación importante:
+
+```text
+La columna [Pedidos] no se suma verticalmente como [Ventas Netas] o [Unidades Vendidas].
+```
+
+Un mismo pedido puede contener productos de más de una familia o categoría. Por eso:
+
+- el subtotal de una familia cuenta los pedidos distintos que incluyen productos de esa familia
+- el subtotal de otra familia puede contar algunos de esos mismos pedidos
+- el total general cuenta pedidos distintos una sola vez
+
+Entonces, si los pedidos por familia suman más que el total general, no es un error. Significa que algunos pedidos compraron productos de varias familias.
 
 Opcional:
 
