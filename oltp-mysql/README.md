@@ -30,6 +30,10 @@ Script base del OLTP:
 
 - `mysql/init/farmadb.sql`
 
+Script opcional para ampliar datos despues del ETL simple:
+
+- `4_cargar_datos_didacticos_bi.sql`
+
 ## Operación mínima
 
 Levantar el servicio:
@@ -54,11 +58,20 @@ Orden recomendado:
 2. `2_G_pasos.sql`
 3. `3_poblar.sql`
 
+Luego de explicar el flujo ETL con los datos minimos, puedes cargar datos
+didacticos para analisis BI:
+
+```powershell
+Get-Content .\4_cargar_datos_didacticos_bi.sql -Raw |
+  docker exec -i farmacia-oltp-mysql mysql -uroot -proot
+```
+
 Uso de cada script:
 
 - `1_dm.sql`: crea dimensiones y tabla de hechos del DataMart manual
 - `2_G_pasos.sql`: explica la construcción pedagógica de la vista `G`
 - `3_poblar.sql`: carga dimensiones, `vw_g_ventas` y `fact_ventas`
+- `4_cargar_datos_didacticos_bi.sql`: agrega pedidos 2024-2025 para OLAP, KPIs y comparativos
 
 ## Validación mínima
 

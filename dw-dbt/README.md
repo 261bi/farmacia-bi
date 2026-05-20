@@ -7,7 +7,7 @@ Este directorio contiene el proyecto `dbt` que transforma la capa `raw` y constr
 ## Rol en la arquitectura
 
 ```text
-MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
+MySQL -> Airbyte o Debezium -> PostgreSQL raw -> dbt staging -> dbt marts
 ```
 
 ## Prerequisitos
@@ -15,7 +15,7 @@ MySQL -> Airbyte -> PostgreSQL raw -> dbt staging -> dbt marts
 Antes de usar este módulo deben estar operativos:
 
 - `dw-pg/` con la base `farmacia_dw`
-- `raw` cargado por Airbyte
+- `raw` cargado por Airbyte o Debezium
 
 ## Configuración clave
 

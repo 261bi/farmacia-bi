@@ -1,63 +1,75 @@
-# Sesión U2 S3 P2: Medidas DAX y agregaciones BI
+# Sesión U2 S3 P2: Medidas DAX y agregaciones BI v2
 
 ## 1. Título
 
-Definición de medidas DAX, agregaciones y KPIs comerciales sobre `fact_ventas`.
+Creación de medidas DAX mínimas para análisis de ventas en Power BI.
 
 ## 2. Objetivo
 
-Crear una capa de métricas BI en Power BI usando medidas DAX controladas, reutilizables y consistentes con el DataMart.
+Crear una capa simple de medidas oficiales para analizar ventas netas, pedidos, unidades y ticket promedio.
 
 Al finalizar la práctica, el alumno debe poder:
 
 - diferenciar columnas numéricas de medidas
-- crear medidas DAX base
-- crear medidas derivadas
-- calcular porcentajes y promedios
-- validar medidas contra SQL
-- usar medidas en visuales y matrices OLAP
+- crear medidas DAX reutilizables
+- evitar agregaciones improvisadas en visuales
+- validar medidas principales contra SQL
+- usar medidas en tablas, matrices y visuales temporales
 
-## 3. Relación con la práctica previa
+## 3. Regla central
 
-Esta práctica continúa desde:
+En Power BI:
 
-- [SESION_U2_S3_P1_MODELO_SEMANTICO_POWER_BI.md](SESION_U2_S3_P1_MODELO_SEMANTICO_POWER_BI.md)
+```text
+dimensiones -> filtros, filas, columnas y ejes
+medidas     -> valores del análisis
+```
 
-Antes de iniciar, verifica:
+El alumno no debe arrastrar columnas numéricas de `fact_ventas` como si fueran KPIs finales. Primero se crean medidas oficiales.
 
-- las seis tablas de `marts` están importadas
-- las relaciones están creadas
-- las jerarquías principales existen
+## 4. Tabla de medidas
 
-## 4. Regla didactica central
-
-En Power BI, el usuario final no debería arrastrar columnas numéricas del hecho para improvisar KPIs.
-
-La práctica correcta es:
-
-- columnas del hecho: materia prima
-- medidas DAX: métricas oficiales
-- dimensiones: filtros y ejes de análisis
-
-## 5. Tabla recomendada para medidas
-
-Para organizar el modelo, crea una tabla vacía llamada:
+Crea una tabla vacía llamada:
 
 ```text
 _Medidas
 ```
 
-Forma simple:
+Usa esta tabla para guardar todas las medidas DAX del reporte.
 
-1. En Power BI, selecciona `Inicio`.
-2. Elige `Especificar datos`.
-3. Crea una tabla con una columna dummy.
-4. Nombra la tabla como `_Medidas`.
-5. Luego oculta la columna dummy.
+## 5. Medidas obligatorias
 
-Las medidas se pueden guardar en esta tabla para que el panel de campos quede ordenado.
+### 5.1 Ventas netas
 
-## 6. Medidas base
+```DAX
+Ventas Netas = SUM(fact_ventas[venta_neta])
+```
+
+Es la medida principal del curso.
+
+### 5.2 Pedidos
+
+```DAX
+Pedidos = DISTINCTCOUNT(fact_ventas[pedido_id])
+```
+
+Se usa `DISTINCTCOUNT` porque un pedido puede tener varias líneas.
+
+### 5.3 Unidades vendidas
+
+```DAX
+Unidades Vendidas = SUM(fact_ventas[cantidad_vendida])
+```
+
+### 5.4 Ticket promedio
+
+```DAX
+Ticket Promedio = DIVIDE([Ventas Netas], [Pedidos])
+```
+
+## 6. Medidas opcionales
+
+Estas medidas se pueden crear si el grupo ya domina la lectura básica de ventas.
 
 ```DAX
 Ventas Brutas = SUM(fact_ventas[venta_bruta])
@@ -65,10 +77,6 @@ Ventas Brutas = SUM(fact_ventas[venta_bruta])
 
 ```DAX
 Descuentos = SUM(fact_ventas[descuento_total])
-```
-
-```DAX
-Ventas Netas = SUM(fact_ventas[venta_neta])
 ```
 
 ```DAX
@@ -80,36 +88,10 @@ Margen Bruto = SUM(fact_ventas[margen_bruto])
 ```
 
 ```DAX
-Unidades Vendidas = SUM(fact_ventas[cantidad_vendida])
-```
-
-```DAX
-Líneas de Venta = COUNTROWS(fact_ventas)
-```
-
-## 7. Medidas derivadas
-
-```DAX
-Pedidos = DISTINCTCOUNT(fact_ventas[pedido_id])
-```
-
-```DAX
 % Margen Bruto = DIVIDE([Margen Bruto], [Ventas Netas])
 ```
 
-```DAX
-% Descuento = DIVIDE([Descuentos], [Ventas Brutas])
-```
-
-```DAX
-Ticket Promedio = DIVIDE([Ventas Netas], [Pedidos])
-```
-
-```DAX
-Precio Promedio Neto = DIVIDE([Ventas Netas], [Unidades Vendidas])
-```
-
-## 8. Medidas operativas
+## 7. Medidas operativas opcionales
 
 ```DAX
 Minutos Confirmación Promedio = AVERAGE(fact_ventas[minutos_confirmacion])
@@ -127,7 +109,7 @@ Horas Entrega Promedio = AVERAGE(fact_ventas[horas_entrega])
 Horas Lead Time Promedio = AVERAGE(fact_ventas[horas_lead_time])
 ```
 
-## 9. Medidas con contexto de tiempo
+## 8. Medida temporal simple
 
 ```DAX
 Ventas Netas Acumuladas =
@@ -140,117 +122,66 @@ CALCULATE(
 )
 ```
 
-```DAX
-Participación Ventas Netas =
-DIVIDE(
-    [Ventas Netas],
-    CALCULATE([Ventas Netas], ALLSELECTED())
-)
-```
+No se usarán funciones de inteligencia de tiempo como ruta principal. El curso trabajará con `dim_fecha`.
 
-## 10. Agregaciones correctas por tipo de métrica
+## 9. Formatos
 
-Métricas aditivas:
+Configura:
 
-- ventas brutas
-- descuentos
-- ventas netas
-- costo total
-- margen bruto
-- unidades vendidas
+- moneda: `[Ventas Netas]`, `[Ticket Promedio]`
+- entero: `[Pedidos]`, `[Unidades Vendidas]`
+- moneda opcional: `[Ventas Brutas]`, `[Descuentos]`, `[Costo Total]`, `[Margen Bruto]`
+- porcentaje opcional: `[% Margen Bruto]`
 
-Métricas semi-aditivas o de conteo:
+## 10. Validación SQL
 
-- pedidos
-- líneas de venta
-
-Métricas no aditivas:
-
-- porcentaje de margen
-- porcentaje de descuento
-- ticket promedio
-- precio promedio
-- tiempos promedio
-
-Regla clave:
-
-- primero suma numeradores y denominadores
-- luego calcula el ratio
-
-Por eso, `% Margen Bruto` debe calcularse como:
-
-```DAX
-DIVIDE([Margen Bruto], [Ventas Netas])
-```
-
-No como promedio simple de `fact_ventas[pct_margen_bruto]`.
-
-## 11. Validación contra SQL
-
-### 11.1 Ventas netas
+### 10.1 Ventas netas
 
 ```sql
 SELECT SUM(venta_neta) AS ventas_netas
 FROM marts.fact_ventas;
 ```
 
-Debe coincidir con:
-
-```text
-[Ventas Netas]
-```
-
-### 11.2 Margen bruto
+### 10.2 Pedidos
 
 ```sql
-SELECT SUM(margen_bruto) AS margen_bruto
+SELECT COUNT(DISTINCT pedido_id) AS pedidos
 FROM marts.fact_ventas;
 ```
 
-Debe coincidir con:
+### 10.3 Unidades vendidas
 
-```text
-[Margen Bruto]
+```sql
+SELECT SUM(cantidad_vendida) AS unidades_vendidas
+FROM marts.fact_ventas;
 ```
 
-### 11.3 Porcentaje de margen
+### 10.4 Ticket promedio
 
 ```sql
 SELECT
-    SUM(margen_bruto) / NULLIF(SUM(venta_neta), 0) AS pct_margen_bruto
+    SUM(venta_neta) / NULLIF(COUNT(DISTINCT pedido_id), 0) AS ticket_promedio
 FROM marts.fact_ventas;
 ```
 
-Debe coincidir con:
+## 11. Validación visual
 
-```text
-[% Margen Bruto]
-```
+Crea:
 
-## 12. Formato de medidas
+- una tarjeta con `[Ventas Netas]`
+- una tarjeta con `[Pedidos]`
+- una tarjeta con `[Ticket Promedio]`
+- una matriz por `dim_producto[nombre_categoria]` con `[Ventas Netas]`
+- un gráfico por `dim_fecha[mes_desc]` con `[Ventas Netas]`
 
-Configura formato:
+## 12. Evidencias a entregar
 
-- moneda: `[Ventas Brutas]`, `[Descuentos]`, `[Ventas Netas]`, `[Costo Total]`, `[Margen Bruto]`, `[Ticket Promedio]`, `[Precio Promedio Neto]`
-- porcentaje: `[% Margen Bruto]`, `[% Descuento]`, `[Participación Ventas Netas]`
-- entero: `[Unidades Vendidas]`, `[Pedidos]`, `[Líneas de Venta]`
-- decimal: medidas de tiempo promedio
+- captura de tabla `_Medidas`
+- captura de medidas obligatorias
+- captura de formatos aplicados
+- captura de tarjetas principales
+- captura de validación SQL
 
-## 13. Archivo de apoyo
+## 13. Cierre
 
-Las medidas de esta práctica también quedan listadas en:
-
-- [medidas_farmacia_bi.dax](medidas_farmacia_bi.dax)
-
-## 14. Evidencias a entregar
-
-- captura de la tabla `_Medidas`
-- captura de las medidas base creadas
-- captura de las medidas derivadas creadas
-- captura de una tarjeta con `[Ventas Netas]`
-- captura de una tarjeta con `[% Margen Bruto]`
-- captura de validación SQL contra Power BI
-
-## 15. Cierre
-
-Con esta práctica, el modelo deja de depender de agregaciones manuales en cada visual. Las métricas principales quedan definidas como una capa semántica reutilizable, consistente y validable.
+Con esta práctica, el modelo ya tiene una capa mínima de métricas gobernadas. Las siguientes sesiones usarán estas medidas para explorar, contar hallazgos y construir KPIs ejecutivos.

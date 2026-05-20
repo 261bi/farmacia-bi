@@ -7,7 +7,7 @@ Esta carpeta queda reservada para la capa de consumo analítico del proyecto.
 ## Rol en la arquitectura
 
 ```text
-MySQL -> Airbyte -> PostgreSQL -> dbt -> Power BI
+MySQL -> Airbyte o Debezium -> PostgreSQL -> dbt -> Power BI
 ```
 
 ## Fuente principal
@@ -44,11 +44,35 @@ Esta carpeta contiene la tercera sesión macro de la Unidad 2:
 - [SESION_U2_S3_P2_MEDIDAS_DAX_Y_AGREGACIONES.md](SESION_U2_S3_P2_MEDIDAS_DAX_Y_AGREGACIONES.md)
 - [medidas_farmacia_bi.dax](medidas_farmacia_bi.dax)
 
+Nota:
+
+- los archivos con sufijo `_vAnterior` se conservan temporalmente como referencia historica
+- la ruta oficial de clase usa los archivos sin sufijo
+
 ## Sesión U2 S4
 
-Esta carpeta también contiene el inicio de la visualización BI base:
+Exploración OLAP, hallazgos y storytelling BI:
 
-- [SESION_U2_S4_P1_VISUALIZACION_BI_BASE.md](SESION_U2_S4_P1_VISUALIZACION_BI_BASE.md)
+- [SESION_U2_S4_P1_EXPLORACION_OLAP_STORYTELLING_POWER_BI.md](SESION_U2_S4_P1_EXPLORACION_OLAP_STORYTELLING_POWER_BI.md)
+
+## Sesión U2 S5
+
+Dashboard BI con KPIs y visualización base:
+
+- [SESION_U2_S5_P1_DASHBOARD_KPIS_VISUALIZACION_BI.md](SESION_U2_S5_P1_DASHBOARD_KPIS_VISUALIZACION_BI.md)
+- [SESION_U2_S5_P2_DASHBOARD_KPIS_VISUALIZACION_BI.md](SESION_U2_S5_P2_DASHBOARD_KPIS_VISUALIZACION_BI.md)
+
+## Sesión U2 S6
+
+Gobierno del dato en BI:
+
+- [SESION_U2_S6_P1_GOBIERNO_DEL_DATO_BI.md](SESION_U2_S6_P1_GOBIERNO_DEL_DATO_BI.md)
+
+## Sesión U2 S7
+
+Evaluación integral de la Unidad 2:
+
+- [SESION_U2_S7_P1_EVALUACION_U2_BI_END_TO_END.md](SESION_U2_S7_P1_EVALUACION_U2_BI_END_TO_END.md)
 
 ## Validación mínima
 
@@ -69,3 +93,6 @@ select * from marts.fact_ventas limit 20;
 - [../dw-dbt/SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](../dw-dbt/SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)
 - [../UNIDAD_2_SESION_3.md](../UNIDAD_2_SESION_3.md)
 - [../UNIDAD_2_SESION_4.md](../UNIDAD_2_SESION_4.md)
+- [../UNIDAD_2_SESION_5.md](../UNIDAD_2_SESION_5.md)
+- [../UNIDAD_2_SESION_6.md](../UNIDAD_2_SESION_6.md)
+- [../UNIDAD_2_SESION_7.md](../UNIDAD_2_SESION_7.md)

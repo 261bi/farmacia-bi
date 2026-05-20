@@ -44,3 +44,18 @@ DIVIDE(
     [Ventas Netas],
     CALCULATE([Ventas Netas], ALLSELECTED())
 )
+
+% Pedidos a Tiempo =
+DIVIDE(
+    CALCULATE(
+        DISTINCTCOUNT(fact_ventas[pedido_id]),
+        FILTER(
+            fact_ventas,
+            NOT ISBLANK(fact_ventas[horas_lead_time])
+                && fact_ventas[horas_lead_time] <= 24
+        )
+    ),
+    [Pedidos]
+)
+
+Minutos Entrega Promedio = [Horas Entrega Promedio] * 60

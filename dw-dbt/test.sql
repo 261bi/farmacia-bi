@@ -1,3 +1,4 @@
+-- Active: 1776636899011@@127.0.0.1@15432@farmacia_dw
 SELECT COUNT(*) AS total_raw_detalle
 FROM raw.pedido_detalles;
 

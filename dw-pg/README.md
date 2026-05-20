@@ -7,7 +7,7 @@ Esta carpeta contiene la base PostgreSQL que aloja el `Data Warehouse` y el `Dat
 ## Rol en la arquitectura
 
 ```text
-MySQL -> Airbyte -> PostgreSQL (raw, staging, marts) -> dbt -> Power BI
+MySQL -> Airbyte o Debezium -> PostgreSQL (raw, staging, marts) -> dbt -> Power BI
 ```
 
 ## Configuración clave
@@ -59,12 +59,13 @@ Dentro de PostgreSQL:
 
 ## Integración
 
-- `ingesta-airbyte/` aterriza datos en `raw`
+- `ingesta-airbyte/` o `ingesta-debezium/` aterriza datos en `raw`
 - `dw-dbt/` transforma `raw` hacia `staging` y `marts`
 - `powerbi/` consume principalmente `marts`
 
 ## Guías relacionadas
 
 - [../ingesta-airbyte/SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md](../ingesta-airbyte/SESION_U2_S2_P1_AIRBYTE_REPLICA_MYSQL_POSTGRES.md)
+- [../ingesta-debezium/SESION_U2_S2_P4_CDC_CARGA_INCREMENTAL_Y_SCD.md](../ingesta-debezium/SESION_U2_S2_P4_CDC_CARGA_INCREMENTAL_Y_SCD.md)
 - [../dw-dbt/SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md](../dw-dbt/SESION_U2_S2_P2_DBT_MODELADO_FISICO_DATAMART.md)
 - [../dw-dbt/SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md](../dw-dbt/SESION_U2_S2_P3_VALIDACION_ANALITICA_DEL_DATAMART.md)

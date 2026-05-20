@@ -2,6 +2,12 @@
 
 Este proyecto levanta una base mínima de infraestructura para trabajar Change Data Capture (CDC) con Debezium sobre Kafka.
 
+## Guía de sesión
+
+Esta carpeta complementa la sesión 2 de la Unidad 2:
+
+- [SESION_U2_S2_P4_CDC_CARGA_INCREMENTAL_Y_SCD.md](SESION_U2_S2_P4_CDC_CARGA_INCREMENTAL_Y_SCD.md)
+
 La intención del stack es servir como laboratorio o punto de partida para una migración desde MySQL hacia PostgreSQL, manteniendo ambos sistemas sincronizados mientras se realiza la carga histórica inicial.
 
 ## Objetivo
@@ -49,13 +55,16 @@ BI / consumo analítico
 El archivo [docker-compose.yml](c:/261bigdata/cdc/docker-compose.yml) levanta estos servicios:
 
 - Zookeeper
-- MySQL 8 de laboratorio como origen simulado
 - Kafka
 - Kafka UI para revisar brokers, topics y mensajes desde el navegador
 - Kafka Connect con Debezium
-- PostgreSQL de laboratorio como destino de pruebas
-- script MySQL para poblar `farmadb` como origen del lab
 - configuraciones de conectores MySQL source y PostgreSQL sink
+
+Este compose ya no levanta MySQL ni PostgreSQL propios. Usa los servicios del proyecto:
+
+- MySQL OLTP: `farmacia-oltp-mysql`, servicio DNS `mysql-farmadb`, puerto host `13306`
+- PostgreSQL DW: `farmacia-dw-pg`, servicio DNS `postgres-farmacia-dw`, puerto host `15432`
+- red compartida: `farmacia-bi-net`
 
 Versiones actuales:
 
@@ -98,7 +107,8 @@ Tablas iniciales del origen:
 
 Script de inicialización del origen:
 
-- [mysql/init/01_farmadb.sql](c:/261bigdata/cdc/mysql/init/01_farmadb.sql)
+- [../oltp-mysql/mysql/init/farmadb.sql](../oltp-mysql/mysql/init/farmadb.sql)
+- [../oltp-mysql/4_cargar_datos_didacticos_bi.sql](../oltp-mysql/4_cargar_datos_didacticos_bi.sql), opcional para ampliar datos antes del snapshot
 
 ## Conectores incluidos
 
@@ -152,11 +162,11 @@ Se usa como dependencia del broker Kafka en esta composición actual.
 
 ### MySQL 8
 
-Se agrega un MySQL 8 de laboratorio como fuente del CDC.
+Se usa el MySQL OLTP del proyecto `oltp-mysql`, no un MySQL propio dentro de este compose.
 
 Puerto expuesto:
 
-- `33306`
+- `13306`
 
 Credenciales por defecto:
 
@@ -172,7 +182,7 @@ Credenciales usadas por el conector source en este laboratorio:
 Inicializacion automatica:
 
 - crea la base `farmadb`;
-- ejecuta [mysql/init/01_farmadb.sql](c:/261bigdata/cdc/mysql/init/01_farmadb.sql);
+- ejecuta [../oltp-mysql/mysql/init/farmadb.sql](../oltp-mysql/mysql/init/farmadb.sql);
 - deja disponible el acceso del usuario `root` para el conector source.
 
 Nota de laboratorio:
@@ -270,15 +280,13 @@ Puerto expuesto:
 
 - `38083`
 
-### PostgreSQL de laboratorio
+### PostgreSQL DW
 
-Se incorpora un PostgreSQL local como destino de laboratorio para probar bulk load, validaciones y etapas previas al CDC real.
-
-Por defecto debe estar vacío. En este laboratorio, el destino no trae tablas ni datos precargados: el sink JDBC crea las tablas automáticamente a partir de los eventos MySQL.
+Se usa el PostgreSQL DW del proyecto `dw-pg`, no un PostgreSQL propio dentro de este compose. El sink JDBC escribe la replica de tablas fuente en el esquema `raw`.
 
 Puerto expuesto:
 
-- `35432`
+- `15432`
 
 Credenciales por defecto:
 
@@ -342,12 +350,18 @@ docker compose up -d
 
 ## Cómo poblar el origen MySQL
 
-Si usas el contenedor MySQL del compose, la carga ocurre automáticamente en el primer arranque mediante [mysql/init/01_farmadb.sql](c:/261bigdata/cdc/mysql/init/01_farmadb.sql).
+El origen MySQL se administra desde `../oltp-mysql`.
 
-Si quieres cargarla manualmente sobre otro MySQL:
+La semilla mínima ocurre en el primer arranque de `farmacia-oltp-mysql` mediante:
+
+- `../oltp-mysql/mysql/init/farmadb.sql`
+
+Luego, para las prácticas BI, carga manualmente los datos didácticos:
 
 ```powershell
-mysql -u root -p < mysql/init/01_farmadb.sql
+cd C:\261bi\farmacia-bi\oltp-mysql
+Get-Content .\4_cargar_datos_didacticos_bi.sql -Raw |
+  docker exec -i farmacia-oltp-mysql mysql -uroot -proot
 ```
 
 ## Ejecución manual desde cero
@@ -470,7 +484,7 @@ Invoke-RestMethod http://localhost:38083/connectors/postgres-cdc-sink/status
 Ejemplo con `mysql`:
 
 ```powershell
-mysql -u root -proot -h localhost -P 33306 -D farmadb -e "show tables;"
+mysql -u root -proot -h localhost -P 13306 -D farmadb -e "show tables;"
 ```
 
 El script crea y carga estas entidades en MySQL:
@@ -488,7 +502,7 @@ El script crea y carga estas entidades en MySQL:
 Validaciones básicas:
 
 1. Confirmar que los tres servicios están arriba con `docker compose ps`.
-2. Confirmar que MySQL responde en `localhost:33306`.
+2. Confirmar que MySQL responde en `localhost:13306`.
 3. Verificar que Kafka Connect responde en `http://localhost:38083/`.
 4. Confirmar que el endpoint de conectores responde en `http://localhost:38083/connectors`.
 5. Abrir Kafka UI en `http://localhost:38085` y confirmar que aparece el cluster `farmacia-bi-debezium`.
