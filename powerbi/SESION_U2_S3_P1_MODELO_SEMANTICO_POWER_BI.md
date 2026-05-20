@@ -288,11 +288,36 @@ Producto Comercial
 
 No uses la jerarquía automática de fechas como jerarquía oficial del curso.
 
-## 10. Validación visual del modelo
+## 10. Formatos semánticos
+
+Configura el formato de los campos numéricos visibles. Esta configuración forma parte del modelo semántico porque define cómo se leerán los datos en cualquier visual.
+
+Columnas base:
+
+- moneda: `fact_ventas[venta_neta]`
+- entero o número sin decimales: `fact_ventas[pedido_count]`
+- entero o número sin decimales: `fact_ventas[cantidad_vendida]`
+
+Columnas opcionales:
+
+- moneda: `fact_ventas[venta_bruta]`
+- moneda: `fact_ventas[descuento_total]`
+- moneda: `fact_ventas[costo_total]`
+- moneda: `fact_ventas[margen_bruto]`
+- porcentaje: `fact_ventas[pct_margen_bruto]`
+
+Cuando se creen medidas en la siguiente práctica, usa el mismo criterio:
+
+- moneda: `[Ventas Netas]`, `[Ticket Promedio]`
+- entero: `[Pedidos]`, `[Unidades Vendidas]`
+- moneda opcional: `[Ventas Brutas]`, `[Descuentos]`, `[Costo Total]`, `[Margen Bruto]`
+- porcentaje opcional: `[% Margen Bruto]`
+
+## 11. Validación visual del modelo
 
 En una página temporal, arma una validación rápida del modelo. Esta página no es todavía el dashboard final; solo sirve para comprobar que las relaciones, jerarquías y filtros funcionan correctamente.
 
-### 10.1 Segmentador por año
+### 11.1 Segmentador por año
 
 Agrega un `Segmentador`.
 
@@ -308,7 +333,7 @@ Resultado esperado:
 - al seleccionar un año, cambian el gráfico y la matriz
 - no necesitas filtrar directamente la tabla de hechos
 
-### 10.2 Gráfico de ventas por mes y año
+### 11.2 Gráfico de ventas por mes y año
 
 Agrega un `Gráfico de líneas`.
 
@@ -338,7 +363,7 @@ Respuesta esperada:
 No. 2026 todavía es un año parcial; la comparación debe leerse hasta el mismo periodo o aclarar que el año está incompleto.
 ```
 
-### 10.3 Matriz calendario
+### 11.3 Matriz calendario
 
 Agrega una `Matriz`.
 
@@ -365,7 +390,7 @@ Resultado esperado:
 - el subtotal de cada nivel se calcula automáticamente
 - el modelo responde correctamente desde `dim_fecha` hacia `fact_ventas`
 
-### 10.4 Tablas de control
+### 11.4 Tablas de control
 
 Agrega una tabla simple por mes.
 
@@ -393,7 +418,7 @@ Nota:
 En la siguiente práctica se reemplazará la suma automática por la medida oficial [Ventas Netas].
 ```
 
-## 11. Evidencias a entregar
+## 12. Evidencias a entregar
 
 - captura de conexión a PostgreSQL
 - captura de tablas `marts` importadas
@@ -402,11 +427,12 @@ En la siguiente práctica se reemplazará la suma automática por la medida ofic
 - captura de jerarquía `Calendario`
 - captura de jerarquía `Producto Comercial`
 - captura de ordenamiento de `mes_desc` o `dia_semana_desc`
+- captura de formatos semánticos aplicados
 - captura del segmentador por año
 - captura del gráfico de ventas por mes y año
 - captura de la matriz calendario
 - captura de las tablas de control por mes y día de semana
 
-## 12. Cierre
+## 13. Cierre
 
 Con esta práctica, Power BI queda conectado a un modelo semántico limpio. La siguiente práctica define las medidas oficiales que usarán todas las páginas del reporte.
