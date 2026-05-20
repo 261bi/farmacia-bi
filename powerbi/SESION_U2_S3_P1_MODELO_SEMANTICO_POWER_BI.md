@@ -83,14 +83,64 @@ Dimensiones:
 - `dim_vendedor`
 - `dim_estado_pedido`
 
-Relaciones:
+Diagrama del modelo:
 
-```text
-dim_fecha[fecha_key]                 1 -> * fact_ventas[fecha_key]
-dim_producto[producto_key]           1 -> * fact_ventas[producto_key]
-dim_cliente[cliente_key]             1 -> * fact_ventas[cliente_key]
-dim_vendedor[vendedor_key]           1 -> * fact_ventas[vendedor_key]
-dim_estado_pedido[estado_pedido_key] 1 -> * fact_ventas[estado_pedido_key]
+```mermaid
+erDiagram
+    dim_fecha ||--o{ fact_ventas : "fecha_key"
+    dim_producto ||--o{ fact_ventas : "producto_key"
+    dim_cliente ||--o{ fact_ventas : "cliente_key"
+    dim_vendedor ||--o{ fact_ventas : "vendedor_key"
+    dim_estado_pedido ||--o{ fact_ventas : "estado_pedido_key"
+
+    dim_fecha {
+        int fecha_key PK
+        date fecha
+        int anio
+        int trimestre
+        int mes_numero
+        string mes_desc
+        int dia
+        int dia_semana_numero
+        string dia_semana_desc
+    }
+
+    dim_producto {
+        int producto_key PK
+        int producto_id
+        string nombre_familia
+        string nombre_categoria
+        string nombre_producto
+    }
+
+    dim_cliente {
+        int cliente_key PK
+        int cliente_id
+        string nombre_cliente
+    }
+
+    dim_vendedor {
+        int vendedor_key PK
+        int vendedor_id
+        string nombre_vendedor
+    }
+
+    dim_estado_pedido {
+        int estado_pedido_key PK
+        string estado_pedido
+    }
+
+    fact_ventas {
+        int fecha_key FK
+        int producto_key FK
+        int cliente_key FK
+        int vendedor_key FK
+        int estado_pedido_key FK
+        int pedido_id
+        int producto_id
+        decimal cantidad_vendida
+        decimal venta_neta
+    }
 ```
 
 Configuración:
@@ -168,6 +218,52 @@ dim_fecha[dia_semana_desc]  por dim_fecha[dia_semana_numero]
 ```
 
 Esto evita que Power BI ordene meses o días como texto.
+
+### 8.1 Actividad: orden temporal del día de semana
+
+Crea una tabla simple.
+
+Filas:
+
+- `dim_fecha[dia_semana_desc]`
+
+Valores:
+
+- suma de `fact_ventas[venta_neta]`
+
+Pregunta:
+
+```text
+¿Qué sucede con el informe?
+```
+
+Si los días aparecen en orden alfabético, corrige:
+
+1. Ve a la vista `Datos`.
+2. Selecciona `dim_fecha[dia_semana_desc]`.
+3. Elige `Ordenar por columna`.
+4. Selecciona `dim_fecha[dia_semana_numero]`.
+5. Regresa al informe.
+
+Resultado esperado:
+
+```text
+lunes
+martes
+miércoles
+jueves
+viernes
+sábado
+domingo
+```
+
+Pregunta final:
+
+```text
+¿Cambió el dato o cambió la forma correcta de leerlo?
+```
+
+La respuesta esperada: cambió la forma correcta de leerlo. Los importes no cambiaron; cambió el orden de presentación.
 
 ## 9. Jerarquías
 

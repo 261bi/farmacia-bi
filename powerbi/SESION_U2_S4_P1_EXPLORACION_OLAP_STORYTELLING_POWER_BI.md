@@ -179,7 +179,7 @@ Uso:
 - detectar picos dentro del mes
 - reforzar la idea de progresión temporal
 
-## 10. Orden temporal del día de semana
+## 10. Ventas por día de semana
 
 Crea una tabla simple.
 
@@ -194,36 +194,13 @@ Valores:
 Pregunta:
 
 ```text
-¿Qué sucede con el informe?
+¿Qué día de semana concentra mayor venta neta?
 ```
 
-Si los días aparecen en orden alfabético, corrige:
+Nota:
 
-1. Ve a la vista `Datos`.
-2. Selecciona `dim_fecha[dia_semana_desc]`.
-3. Elige `Ordenar por columna`.
-4. Selecciona `dim_fecha[dia_semana_numero]`.
-5. Regresa al informe.
-
-Resultado esperado:
-
-```text
-lunes
-martes
-miércoles
-jueves
-viernes
-sábado
-domingo
-```
-
-Pregunta final:
-
-```text
-¿Cambió el dato o cambió la forma correcta de leerlo?
-```
-
-La respuesta esperada: cambió la presentación, no el dato.
+- el orden de `dim_fecha[dia_semana_desc]` ya debe estar configurado en el modelo semántico
+- si el orden aparece alfabético, vuelve a la S3 P1 y revisa la sección `8. Orden semántico de fechas`
 
 ## 11. Drill-through de producto
 
@@ -417,7 +394,7 @@ ORDER BY df.dia_semana_numero;
 - existe visual de progresión temporal
 - existe visual de ventas por mes y año
 - existe visual de ventas por día y año
-- la tabla por día de semana está ordenada correctamente
+- la tabla por día de semana respeta el orden configurado en el modelo semántico
 - existe drill-through de producto
 - existe drill-through de cliente
 - existe tooltip contextual
@@ -430,7 +407,7 @@ ORDER BY df.dia_semana_numero;
 - captura de progresión temporal
 - captura de ventas por mes y año
 - captura de ventas por día y año
-- captura de día de semana antes y después de ordenar
+- captura de ventas por día de semana
 - captura de drill-through de producto
 - captura de drill-through de cliente
 - tres hallazgos redactados
