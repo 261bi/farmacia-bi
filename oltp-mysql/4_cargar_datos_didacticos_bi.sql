@@ -4,8 +4,8 @@
 --
 -- Ejecutar despues de explicar el ETL simple con los datos minimos
 -- de farmadb.sql. Este script agrega volumen y temporalidad para
--- practicas de Power BI: OLAP, storytelling, KPIs, rankings y
--- comparativos por anio/mes/dia de semana.
+-- practicas de Power BI: OLAP, storytelling, KPIs, rankings,
+-- comparativos por anio/mes/dia de semana y lectura de anios parciales.
 -- =========================================
 
 USE farmadb;
@@ -35,8 +35,10 @@ INSERT IGNORE INTO `vendedores` (`id`, `nombre`) VALUES
 -- =========================================
 -- Datos didacticos para BI:
 -- - 144 pedidos adicionales entre 2024 y 2025
+-- - 27 pedidos adicionales de enero a mayo de 2026
 -- - varias fechas, meses, dias de semana, clientes, vendedores y estados
--- - permite analizar tendencias, comparativos anuales, rankings y KPIs
+-- - permite analizar tendencias, comparativos anuales, rankings, KPIs
+--   y la diferencia entre un anio completo y un anio en curso
 
 INSERT IGNORE INTO `pedidos` (
   `id`,
@@ -145,7 +147,113 @@ INNER JOIN productos AS p
   ON d.producto_id = p.id;
 
 -- =========================================
--- 4. VALIDACION RAPIDA
+-- 4. PEDIDOS 2026 PARA ANIO PARCIAL
+-- =========================================
+-- Estos registros llegan solo hasta el 20/05/2026, fecha de referencia
+-- de la practica. Sirven para explicar que una comparacion anual puede
+-- ser enganosa si el anio actual aun no tiene datos hasta diciembre.
+
+INSERT IGNORE INTO `pedidos` (
+  `id`,
+  `fecha_creacion`,
+  `fecha_confirmacion`,
+  `fecha_envio`,
+  `fecha_entrega`,
+  `fecha_pago`,
+  `estado`,
+  `cliente_id`,
+  `direccion`,
+  `vendedor_id`
+)
+WITH RECURSIVE seq AS (
+  SELECT 0 AS n
+  UNION ALL
+  SELECT n + 1
+  FROM seq
+  WHERE n < 26
+),
+base AS (
+  SELECT
+    n,
+    DATE_ADD(
+      DATE_ADD('2026-01-07 08:30:00', INTERVAL (n * 5) DAY),
+      INTERVAL MOD(n * 41, 420) MINUTE
+    ) AS fecha_base
+  FROM seq
+)
+SELECT
+  n + 147 AS id,
+  fecha_base AS fecha_creacion,
+  DATE_ADD(fecha_base, INTERVAL (15 + MOD(n * 9, 140)) MINUTE) AS fecha_confirmacion,
+  DATE_ADD(fecha_base, INTERVAL (70 + MOD(n * 11, 210)) MINUTE) AS fecha_envio,
+  DATE_ADD(fecha_base, INTERVAL (6 + MOD(n * 5, 36)) HOUR) AS fecha_entrega,
+  CASE
+    WHEN MOD(n, 3) IN (0, 1)
+      THEN DATE_ADD(fecha_base, INTERVAL (1 + MOD(n, 4)) DAY)
+    ELSE NULL
+  END AS fecha_pago,
+  CASE
+    WHEN MOD(n, 3) = 0 THEN 'Pagado'
+    WHEN MOD(n, 3) = 1 THEN 'Entregado'
+    ELSE 'Enviado'
+  END AS estado,
+  1 + MOD(n + 2, 10) AS cliente_id,
+  CONCAT('Juliaca zona ', 1 + MOD(n, 8), ' pedido parcial 2026 ', n + 147) AS direccion,
+  1 + MOD(n + 1, 6) AS vendedor_id
+FROM base;
+
+INSERT IGNORE INTO `pedido_detalles` (
+  `pedido_id`,
+  `producto_id`,
+  `cantidad`,
+  `precio_compra_unitario`,
+  `precio_venta_unitario`,
+  `total_descuento_unitario`,
+  `igv_unitario`
+)
+WITH RECURSIVE seq AS (
+  SELECT 0 AS n
+  UNION ALL
+  SELECT n + 1
+  FROM seq
+  WHERE n < 26
+),
+lineas AS (
+  SELECT 1 AS linea
+  UNION ALL
+  SELECT 2
+  UNION ALL
+  SELECT 3
+),
+detalle AS (
+  SELECT
+    n,
+    linea,
+    1 + MOD((n * 4) + (linea * 7), 22) AS producto_id,
+    CAST(4 + MOD((n + 2) * (linea + 4), 38) AS DECIMAL(9,2)) AS cantidad,
+    CASE
+      WHEN MOD(n + linea, 7) = 0 THEN 1.25
+      WHEN MOD(n + linea, 7) = 1 THEN 0.75
+      WHEN MOD(n + linea, 7) = 2 THEN 0.50
+      ELSE 0.00
+    END AS descuento_unitario
+  FROM seq
+  CROSS JOIN lineas
+)
+SELECT
+  d.n + 147 AS pedido_id,
+  d.producto_id,
+  d.cantidad,
+  p.precio_compra AS precio_compra_unitario,
+  p.precio_venta AS precio_venta_unitario,
+  d.descuento_unitario AS total_descuento_unitario,
+  ROUND((p.precio_venta - d.descuento_unitario) * 0.18, 2) AS igv_unitario
+FROM detalle AS d
+INNER JOIN productos AS p
+  ON d.producto_id = p.id;
+
+-- =========================================
+-- 5. VALIDACION RAPIDA
 -- =========================================
 
 SELECT

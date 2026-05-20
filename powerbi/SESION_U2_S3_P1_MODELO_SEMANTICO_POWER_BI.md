@@ -248,13 +248,13 @@ Si los días aparecen en orden alfabético, corrige:
 Resultado esperado:
 
 ```text
+domingo
 lunes
 martes
 miércoles
 jueves
 viernes
 sábado
-domingo
 ```
 
 Pregunta final:
@@ -288,27 +288,110 @@ Producto Comercial
 
 No uses la jerarquía automática de fechas como jerarquía oficial del curso.
 
-## 10. Validación mínima
+## 10. Validación visual del modelo
 
-En una página temporal, crea una tabla:
+En una página temporal, arma una validación rápida del modelo. Esta página no es todavía el dashboard final; solo sirve para comprobar que las relaciones, jerarquías y filtros funcionan correctamente.
+
+### 10.1 Segmentador por año
+
+Agrega un `Segmentador`.
+
+Campo:
+
+- `dim_fecha[anio]`
+
+Configúralo como lista o mosaico.
+
+Resultado esperado:
+
+- aparecen los años disponibles
+- al seleccionar un año, cambian el gráfico y la matriz
+- no necesitas filtrar directamente la tabla de hechos
+
+### 10.2 Gráfico de ventas por mes y año
+
+Agrega un `Gráfico de líneas`.
+
+Configura:
+
+- Eje X: `dim_fecha[mes_desc]`
+- Eje Y: suma de `fact_ventas[venta_neta]`
+- Leyenda: `dim_fecha[anio]`
+
+Verifica que `dim_fecha[mes_desc]` esté ordenado por `dim_fecha[mes_numero]`.
+
+Resultado esperado:
+
+- los meses aparecen de enero a diciembre
+- cada año se muestra como una línea diferente
+- 2026 aparece solo hasta el mes disponible en los datos
+
+Pregunta de interpretación:
+
+```text
+¿Se puede comparar 2026 contra 2024 o 2025 como si fuera un año completo?
+```
+
+Respuesta esperada:
+
+```text
+No. 2026 todavía es un año parcial; la comparación debe leerse hasta el mismo periodo o aclarar que el año está incompleto.
+```
+
+### 10.3 Matriz calendario
+
+Agrega una `Matriz`.
 
 Filas:
 
-- `dim_producto[nombre_producto]`
+- jerarquía `Calendario`
 
 Valor:
 
 - suma de `fact_ventas[venta_neta]`
 
-Luego agrega un segmentador:
+Expande la jerarquía hasta:
 
-- `dim_fecha[anio]`
+```text
+anio
+trimestre
+mes_desc
+fecha
+```
 
 Resultado esperado:
 
-- las ventas se agrupan por producto
-- el filtro de año afecta la venta
-- no necesitas hacer joins manuales
+- puedes navegar de año a trimestre, mes y fecha
+- el subtotal de cada nivel se calcula automáticamente
+- el modelo responde correctamente desde `dim_fecha` hacia `fact_ventas`
+
+### 10.4 Tablas de control
+
+Agrega una tabla simple por mes.
+
+Campos:
+
+- `dim_fecha[mes_desc]`
+- suma de `fact_ventas[venta_neta]`
+
+Agrega otra tabla simple por día de semana.
+
+Campos:
+
+- `dim_fecha[dia_semana_desc]`
+- suma de `fact_ventas[venta_neta]`
+
+Resultado esperado:
+
+- los meses respetan el orden calendario
+- los días respetan el orden domingo a sábado
+- los totales coinciden entre gráfico, matriz y tablas
+
+Nota:
+
+```text
+En la siguiente práctica se reemplazará la suma automática por la medida oficial [Ventas Netas].
+```
 
 ## 11. Evidencias a entregar
 
@@ -319,7 +402,10 @@ Resultado esperado:
 - captura de jerarquía `Calendario`
 - captura de jerarquía `Producto Comercial`
 - captura de ordenamiento de `mes_desc` o `dia_semana_desc`
-- captura de tabla de validación por producto
+- captura del segmentador por año
+- captura del gráfico de ventas por mes y año
+- captura de la matriz calendario
+- captura de las tablas de control por mes y día de semana
 
 ## 12. Cierre
 
