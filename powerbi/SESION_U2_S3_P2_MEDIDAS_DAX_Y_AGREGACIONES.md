@@ -259,7 +259,7 @@ Ventas Netas Acumuladas =
 CALCULATE(
     [Ventas Netas],
     FILTER(
-        ALLSELECTED(dim_fecha[fecha]),
+        ALLSELECTED(dim_fecha),
         dim_fecha[fecha] <= MAX(dim_fecha[fecha])
     )
 )
@@ -285,7 +285,9 @@ significa:
 Toma todas las fechas visibles hasta la fecha actual del punto evaluado.
 ```
 
-`ALLSELECTED(dim_fecha[fecha])` quita el filtro puntual de la fecha del eje, pero respeta lo que el usuario seleccionó en segmentadores o filtros externos.
+`ALLSELECTED(dim_fecha)` quita los filtros internos que genera el visual sobre la tabla de fechas, por ejemplo el mes del eje, pero respeta lo que el usuario seleccionó en segmentadores o filtros externos.
+
+Si se usa solo `ALLSELECTED(dim_fecha[fecha])`, el filtro de `mes_desc` puede seguir activo. En ese caso la medida acumula solo dentro del mes actual y termina mostrando el mismo valor que `[Ventas Netas]`.
 
 Ejemplos:
 

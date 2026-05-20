@@ -34,7 +34,7 @@ Ventas Netas Acumuladas =
 CALCULATE(
     [Ventas Netas],
     FILTER(
-        ALLSELECTED(dim_fecha[fecha]),
+        ALLSELECTED(dim_fecha),
         dim_fecha[fecha] <= MAX(dim_fecha[fecha])
     )
 )
