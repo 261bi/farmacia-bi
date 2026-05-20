@@ -62,9 +62,10 @@ Exploración OLAP
 Debe contener:
 
 - matriz OLAP por producto
-- gráfico de progresión temporal
+- gráfico de progresión mensual y acumulada
+- gráfico comparativo por mes y año
 - tabla de ventas por día de semana
-- visual de ventas por categoría
+- análisis diario opcional para investigar picos
 - segmentadores de exploración
 - tooltip contextual
 - espacio de texto para hallazgos
@@ -120,35 +121,51 @@ Preguntas:
 - ¿hay productos que concentran el resultado?
 - ¿la mayor venta viene de muchos pedidos o de pocos pedidos grandes?
 
-## 7. Progresión temporal
+## 7. Progresión mensual y acumulada
 
 Crea un gráfico de líneas.
 
 Eje:
 
-- jerarquía `Calendario`
+- `dim_fecha[mes_desc]`
 
 Valores:
 
 - `[Ventas Netas]`
+- `[Ventas Netas Acumuladas]`
+
+Segmentador:
+
+- `dim_fecha[anio]`
+
+Selecciona un solo año para iniciar la lectura.
+
+Recuerda que `mes_desc` debe estar ordenado por `mes_numero`.
 
 Prueba:
 
-1. Lee ventas por año.
-2. Baja a trimestre.
-3. Baja a mes.
-4. Baja a fecha.
-5. Identifica picos, caídas o estacionalidad.
+1. Selecciona `2024`.
+2. Observa la venta mensual y la línea acumulada.
+3. Selecciona `2025`.
+4. Compara si el acumulado crece de forma parecida o diferente.
+5. Selecciona `2026`.
+6. Observa que el acumulado se detiene en mayo porque el año está incompleto.
 
 Pregunta:
 
 ```text
-¿La venta cambia por tendencia sostenida o por eventos puntuales?
+¿El avance acumulado del año actual puede compararse contra un año completo?
+```
+
+Respuesta esperada:
+
+```text
+No directamente. 2026 solo tiene datos hasta mayo; debe compararse contra el mismo periodo de años anteriores o indicarse que es un año parcial.
 ```
 
 ## 8. Ventas por mes y año
 
-Crea un gráfico de líneas o columnas agrupadas.
+Crea un gráfico de líneas.
 
 Eje:
 
@@ -164,56 +181,92 @@ Valores:
 
 Recuerda que `mes_desc` debe estar ordenado por `mes_numero`.
 
+Uso:
+
+- comparar meses equivalentes entre años
+- detectar meses fuertes o débiles
+- mostrar visualmente que 2026 es un periodo parcial
+
 Preguntas:
 
 - ¿qué meses muestran mayor venta?
 - ¿qué año tiene mejor comportamiento?
 - ¿hay meses comparables con diferencias visibles?
+- ¿2026 debe leerse como año completo o como periodo parcial?
 
-## 9. Ventas por día y año
+Interpretación esperada:
 
-Crea un gráfico de líneas.
+```text
+2026 no debe compararse contra todo 2024 o todo 2025 como año completo. Solo tiene datos hasta mayo, por eso su línea termina antes.
+```
 
-Eje:
+## 9. Ventas por día de semana
 
-- `dim_fecha[dia]`
+Crea una tabla o gráfico de barras.
 
-Leyenda:
-
-- `dim_fecha[anio]`
-
-Valores:
-
-- `[Ventas Netas]`
-
-Uso:
-
-- observar comportamiento diario
-- detectar picos dentro del mes
-- reforzar la idea de progresión temporal
-
-## 10. Ventas por día de semana
-
-Crea una tabla simple.
-
-Filas:
+Filas o eje:
 
 - `dim_fecha[dia_semana_desc]`
 
 Valores:
 
 - `[Ventas Netas]`
+- `[Pedidos]`
+- `[Ticket Promedio]`
 
-Pregunta:
+Pregunta principal:
 
 ```text
 ¿Qué día de semana concentra mayor venta neta?
 ```
 
+Preguntas de lectura:
+
+- ¿el día con más ventas también tiene más pedidos?
+- ¿hay días con menos pedidos pero mayor ticket promedio?
+- ¿conviene reforzar stock o atención en ciertos días?
+
 Nota:
 
 - el orden de `dim_fecha[dia_semana_desc]` ya debe estar configurado en el modelo semántico
 - si el orden aparece alfabético, vuelve a la S3 P1 y revisa la sección `8. Orden semántico de fechas`
+
+## 10. Detalle diario para investigar picos
+
+Esta actividad es opcional. Úsala solo si en los gráficos mensuales aparece un pico o caída que necesita explicación.
+
+Crea un gráfico de columnas.
+
+Eje:
+
+- `dim_fecha[dia]`
+
+Valores:
+
+- `[Ventas Netas]`
+
+Segmentadores obligatorios:
+
+- `dim_fecha[anio]`
+- `dim_fecha[mes_desc]`
+
+Uso:
+
+- selecciona primero un año
+- selecciona luego un mes
+- sirve para detectar picos puntuales dentro de un periodo filtrado
+
+Pregunta:
+
+```text
+¿El pico observado corresponde a un comportamiento recurrente o a un día puntual?
+```
+
+Nota:
+
+```text
+La lectura por fecha exacta puede generar ruido si se muestran muchos años o meses a la vez. Primero analiza mes y acumulado; luego baja al día solo si necesitas explicar un pico.
+```
 
 ## 11. Drill-through de producto
 
@@ -287,8 +340,9 @@ Incluye:
 Asigna el tooltip a:
 
 - matriz OLAP
-- gráfico temporal
-- visual por categoría
+- gráfico de progresión mensual
+- gráfico comparativo por mes y año
+- visual de ventas por día de semana
 
 ## 14. Segmentadores de exploración
 
@@ -404,9 +458,9 @@ ORDER BY df.dia_semana_numero;
 - existe página `Exploración OLAP`
 - se usa `[Ventas Netas]` como medida principal
 - la matriz permite navegar familia, categoría y producto
-- existe visual de progresión temporal
+- existe visual de progresión mensual y acumulada
 - existe visual de ventas por mes y año
-- existe visual de ventas por día y año
+- si se usa análisis diario, está filtrado por año y mes
 - la tabla por día de semana respeta el orden configurado en el modelo semántico
 - existe drill-through de producto
 - existe drill-through de cliente
@@ -417,9 +471,9 @@ ORDER BY df.dia_semana_numero;
 ## 19. Evidencias a entregar
 
 - captura de matriz OLAP
-- captura de progresión temporal
+- captura de progresión mensual y acumulada
 - captura de ventas por mes y año
-- captura de ventas por día y año
+- captura opcional de ventas por día del mes
 - captura de ventas por día de semana
 - captura de drill-through de producto
 - captura de drill-through de cliente
